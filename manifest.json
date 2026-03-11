@@ -1,0 +1,16 @@
+{
+  "name": "Hailite",
+  "short_name": "Hailite",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#17181a",
+  "theme_color": "#17181a",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
