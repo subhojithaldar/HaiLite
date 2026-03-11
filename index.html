@@ -91,6 +91,12 @@ self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWi
     })();
   </script>
 </head>
+
+  <!-- ── Vercel Web Analytics ── -->
+  <script>
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
