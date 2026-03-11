@@ -1,0 +1,1727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>HaiLite — Intelligent Multi-API AI Assistant</title>
+
+  <!-- ── SEO ── -->
+  <meta name="description" content="HaiLite is an intelligent multi-API AI assistant powered by state-of-the-art language models. Chat, search APIs, generate images, extract text from images, and more.">
+  <meta name="keywords" content="HaiLite, AI assistant, multi-API, chatbot, Kimi K2, Groq, language model, OCR, image generation, intelligent chat">
+  <meta name="author" content="HaiLite">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#17181a">
+  <link rel="canonical" href="https://hailite.vercel.app">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://hailite.vercel.app">
+  <meta property="og:title" content="HaiLite — Intelligent Multi-API AI Assistant">
+  <meta property="og:description" content="HaiLite is an intelligent multi-API AI assistant powered by state-of-the-art language models. Chat, search APIs, generate images, extract text from images, and more.">
+  <meta property="og:image" content="/favicon.png">
+  <meta property="og:image:width" content="512">
+  <meta property="og:image:height" content="512">
+  <meta property="og:site_name" content="HaiLite">
+  <meta property="og:locale" content="en_US">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="https://hailite.vercel.app">
+  <meta name="twitter:title" content="HaiLite — Intelligent Multi-API AI Assistant">
+  <meta name="twitter:description" content="HaiLite is an intelligent multi-API AI assistant powered by state-of-the-art language models. Chat, search APIs, generate images, extract text from images, and more.">
+  <meta name="twitter:image" content="/favicon.png">
+
+  <!-- ── PWA ── -->
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/favicon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="HaiLite">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="HaiLite">
+  <meta name="msapplication-TileColor" content="#17181a">
+  <meta name="msapplication-TileImage" content="/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    // ── PWA: Register Service Worker ──
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {
+          // sw.js not found – generate one on the fly from a Blob
+          const swCode = `
+const CACHE='hailite-v1';
+const ASSETS=['/','index.html','/favicon.png','/logo.png'];
+self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS.filter(a=>a!='/sw.js')).catch(()=>{}))));
+self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k))))));
+self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(!resp||resp.status!==200||resp.type!=='basic')return resp;const c=resp.clone();caches.open(CACHE).then(ch=>ch.put(e.request,c));return resp;})));});
+          `;
+          const blob = new Blob([swCode], { type: 'application/javascript' });
+          const url = URL.createObjectURL(blob);
+          navigator.serviceWorker.register(url);
+        });
+      });
+    }
+
+    // ── PWA: Inject manifest if /manifest.json is missing ──
+    (function () {
+      const manifest = {
+        name: 'HaiLite',
+        short_name: 'HaiLite',
+        description: 'Intelligent Multi-API AI Assistant',
+        start_url: 'https://hailite.vercel.app',
+        display: 'standalone',
+        background_color: '#17181a',
+        theme_color: '#17181a',
+        orientation: 'any',
+        icons: [
+          { src: '/favicon.png', sizes: '192x192', type: 'image/png' },
+          { src: '/favicon.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+        ]
+      };
+      const existing = document.querySelector('link[rel="manifest"]');
+      if (existing && existing.href.endsWith('/manifest.json')) {
+        fetch('/manifest.json').catch(() => {
+          const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+          existing.href = URL.createObjectURL(blob);
+        });
+      }
+    })();
+  </script>
+</head>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    :root {
+      --bg:           #17181a;
+      --surface:      #202225;
+      --surface2:     #2c2f33;
+      --surface3:     #35383c;
+      --text:         #f0f2f5;
+      --text-muted:   #a8b3cf;
+      --text-active:  #82aaff;
+      --accent:       #82aaff;
+      --accent-ai:    #c792ea;
+      --border:       #3a3d42;
+      --danger:       #ff8a80;
+      --green:        #69db7c;
+      --sidebar-w:    260px;
+      --radius-sm:    8px;
+      --radius-md:    12px;
+      --radius-lg:    16px;
+      --radius-xl:    20px;
+      --font:         'Inter', sans-serif;
+      --font-mono:    'JetBrains Mono', monospace;
+      --write-area-h: 120px;
+      --msg-size:     15px;
+      --transition:   0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .ms {
+      font-family: 'Material Symbols Outlined';
+      font-style: normal; font-weight: normal; line-height: 1;
+      letter-spacing: normal; text-transform: none; display: inline-block;
+      white-space: nowrap; direction: ltr;
+      -webkit-font-smoothing: antialiased;
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+      user-select: none; color: inherit; font-size: 20px;
+    }
+
+    html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: var(--font); font-size: 16px; }
+    body { display: flex; height: 100dvh; }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+    /* ── OVERLAYS ── */
+    .overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.55);
+      z-index: 99; opacity: 0; pointer-events: none;
+      transition: opacity var(--transition);
+      backdrop-filter: blur(2px);
+    }
+    .overlay.show { opacity: 1; pointer-events: all; }
+
+    /* ── SIDEBAR ── */
+    #sidebar {
+      position: fixed; top: 0; left: 0; bottom: 0;
+      width: var(--sidebar-w); background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      z-index: 200;
+      transform: translateX(-100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    #sidebar.open { transform: translateX(0); }
+
+    .sidebar-header { padding: 16px 14px 10px; display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid var(--border); }
+    .sidebar-title-row { display: flex; align-items: center; justify-content: space-between; }
+    .sidebar-title { font-size: 14px; font-weight: 700; color: var(--text); letter-spacing: 0.5px; text-transform: uppercase; }
+    .sidebar-new-btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      background: var(--surface2); color: var(--text-muted);
+      border: 1px solid var(--border); border-radius: var(--radius-md);
+      padding: 9px 14px; cursor: pointer; font-family: var(--font);
+      font-size: 13px; font-weight: 500; width: 100%;
+      transition: all var(--transition);
+    }
+    .sidebar-new-btn:hover { background: var(--surface3); color: var(--text); border-color: var(--border); }
+    .sidebar-new-btn .ms { font-size: 18px; }
+    .sidebar-search {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 7px 10px;
+      transition: border-color var(--transition);
+    }
+    .sidebar-search:focus-within { border-color: var(--accent); }
+    .sidebar-search .ms { font-size: 16px; color: var(--text-muted); }
+    .sidebar-search input { flex: 1; background: none; border: none; outline: none; font-family: var(--font); font-size: 13px; color: var(--text); }
+    .sidebar-search input::placeholder { color: var(--text-muted); }
+
+    .sidebar-history { flex: 1; overflow-y: auto; padding: 10px 10px; }
+    .history-section-label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; padding: 6px 6px 4px; }
+    .history-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 9px 8px; border-radius: var(--radius-sm);
+      cursor: pointer; transition: background var(--transition);
+    }
+    .history-item:hover, .history-item.active { background: var(--surface2); }
+    .history-item .ms { font-size: 15px; color: var(--text-muted); flex-shrink: 0; }
+    .history-item-text { flex: 1; min-width: 0; font-size: 13px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .history-empty { font-size: 13px; color: var(--text-muted); text-align: center; padding: 32px 0; }
+
+    /* ── SETTINGS PANEL ── */
+    #settings-sheet {
+      position: fixed; top: 0; right: 0; bottom: 0;
+      width: var(--sidebar-w); background: var(--surface);
+      border-left: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      z-index: 200;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    #settings-sheet.open { transform: translateX(0); }
+    .settings-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 14px 10px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .settings-header-title { font-size: 15px; font-weight: 700; color: var(--text); }
+    .settings-content { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+    .setting-group { display: flex; flex-direction: column; gap: 6px; }
+    .setting-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
+    .setting-input {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 9px 11px;
+      font-family: var(--font-mono); font-size: 12px; color: var(--text);
+      outline: none; width: 100%; transition: border-color var(--transition);
+    }
+    .setting-input:focus { border-color: var(--accent); }
+    .setting-input::placeholder { color: var(--text-muted); }
+    .range-row { display: flex; align-items: center; gap: 10px; }
+    .range-row input[type=range] { flex: 1; accent-color: var(--accent); cursor: pointer; }
+    .range-val { font-family: var(--font-mono); font-size: 12px; color: var(--text); min-width: 42px; text-align: right; }
+    .setting-btn {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 4px; background: transparent; border: none;
+      font-family: var(--font); font-size: 13px; color: var(--text);
+      cursor: pointer; transition: background var(--transition); width: 100%;
+      text-align: left; border-radius: var(--radius-sm);
+    }
+    .setting-btn:hover { background: var(--surface2); }
+    .setting-btn .ms { font-size: 18px; color: var(--text-muted); }
+    .setting-btn.danger { color: var(--danger); }
+    .setting-btn.danger .ms { color: var(--danger); }
+    .settings-divider { border: none; border-top: 1px solid var(--border); margin: 4px 0; }
+    .settings-footer { padding: 10px 14px 14px; font-size: 11px; color: var(--text-muted); text-align: center; line-height: 1.5; flex-shrink: 0; border-top: 1px solid var(--border); }
+    .settings-footer strong { font-weight: 600; color: var(--text); }
+
+    /* ── ICON BUTTONS ── */
+    .icon-btn {
+      width: 36px; height: 36px; border-radius: var(--radius-sm);
+      background: transparent; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted); transition: all var(--transition);
+    }
+    .icon-btn:hover { background: var(--surface2); color: var(--text); }
+    .icon-btn .ms { font-size: 20px; }
+
+    /* ── BOTTOM SHEETS ── */
+    .bottom-sheet {
+      position: fixed; left: 0; right: 0; bottom: 0;
+      background: var(--surface); z-index: 300;
+      border-radius: 20px 20px 0 0;
+      border-top: 1px solid var(--border);
+      transform: translateY(100%);
+      transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .bottom-sheet.open { transform: translateY(0); }
+    .sheet-handle { width: 36px; height: 4px; border-radius: 2px; background: var(--surface3); margin: 12px auto 6px; cursor: grab; }
+    .sheet-header { display: flex; align-items: center; justify-content: space-between; padding: 4px 16px 12px; }
+    .sheet-title { font-size: 16px; font-weight: 700; color: var(--text); }
+    .sheet-close { width: 30px; height: 30px; border-radius: var(--radius-sm); background: var(--surface2); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: all var(--transition); }
+    .sheet-close:hover { background: var(--surface3); color: var(--text); }
+    .sheet-close .ms { font-size: 18px; }
+
+    /* Model options */
+    #model-sheet { max-height: 70dvh; display: flex; flex-direction: column; }
+    #model-options { overflow-y: auto; flex: 1; }
+    .model-option { display: flex; align-items: center; justify-content: space-between; padding: 13px 18px; cursor: pointer; transition: background var(--transition); }
+    .model-option:hover { background: var(--surface2); }
+    .model-option-info { display: flex; flex-direction: column; gap: 2px; }
+    .model-option-name { font-size: 14px; font-weight: 600; color: var(--text); }
+    .model-option-id { font-size: 11px; font-family: var(--font-mono); color: var(--text-muted); }
+    .model-option-check { font-size: 18px; color: var(--accent); opacity: 0; transition: opacity var(--transition); }
+    .model-option.selected .model-option-check { opacity: 1; }
+
+    /* Filter sheet */
+    #filter-sheet { max-height: 60dvh; display: flex; flex-direction: column; z-index: 314; }
+    #filter-options { overflow-y: auto; flex: 1; }
+    .filter-mode-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; cursor: pointer; transition: background var(--transition); }
+    .filter-mode-row:hover { background: var(--surface2); }
+    .filter-mode-left { display: flex; align-items: center; gap: 12px; }
+    .filter-mode-icon { width: 38px; height: 38px; border-radius: var(--radius-md); background: var(--surface2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .filter-mode-icon .ms { font-size: 20px; color: var(--text-muted); }
+    .filter-mode-info { display: flex; flex-direction: column; gap: 2px; }
+    .filter-mode-name { font-size: 14px; font-weight: 600; color: var(--text); }
+    .filter-mode-sub { font-size: 11px; color: var(--text-muted); }
+    .filter-mode-check { font-size: 18px; color: var(--accent); opacity: 0; transition: opacity var(--transition); flex-shrink: 0; }
+    .filter-mode-row.selected .filter-mode-check { opacity: 1; }
+
+    /* Upload sheet */
+    .upload-option-row { display: flex; align-items: center; gap: 14px; padding: 14px 18px; cursor: pointer; transition: background var(--transition); }
+    .upload-option-row:hover { background: var(--surface2); }
+    .upload-option-icon { width: 40px; height: 40px; border-radius: var(--radius-md); background: var(--surface2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .upload-option-icon .ms { font-size: 22px; color: var(--text-muted); }
+    .upload-option-label { font-size: 14px; color: var(--text); font-weight: 600; }
+    .upload-option-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+    /* User actions sheet */
+    #user-actions-sheet { z-index: 314; }
+    .user-action-row { display: flex; align-items: center; gap: 14px; padding: 14px 18px; cursor: pointer; transition: background var(--transition); }
+    .user-action-row:hover { background: var(--surface2); }
+    .user-action-icon { width: 36px; height: 36px; border-radius: var(--radius-md); background: var(--surface2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .user-action-icon .ms { font-size: 18px; color: var(--text-muted); }
+    .user-action-label { font-size: 14px; color: var(--text); }
+
+    /* API detail sheet */
+    #api-detail-sheet { z-index: 315; max-height: 80dvh; display: flex; flex-direction: column; }
+    .api-detail-body { padding: 0 16px 24px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; flex: 1; }
+    .api-section-title { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; padding: 8px 0 2px; }
+    .api-item-card { background: var(--surface2); border-radius: var(--radius-md); padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; border: 1px solid var(--border); }
+    .api-item-name { font-size: 13px; font-weight: 700; color: var(--text); }
+    .api-item-desc { font-size: 11px; color: var(--text-muted); }
+    .api-item-url { font-size: 11px; font-family: var(--font-mono); color: var(--text); word-break: break-all; background: var(--bg); padding: 5px 8px; border-radius: 6px; }
+
+    /* ── TOP BAR ── */
+    .top-bar {
+      position: fixed; top: 0; left: 0; right: 0;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 10px;
+      background: rgba(23,24,26,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(58,61,66,0.6);
+      z-index: 50;
+    }
+    .top-bar-left, .top-bar-right { display: flex; align-items: center; gap: 2px; }
+    .chat-logo { display: flex; align-items: center; gap: 8px; margin-left: 4px; pointer-events: none; }
+    .logo-img-wrap { width: 26px; height: 26px; border-radius: 8px; background: var(--surface2); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
+    .logo-img-wrap img { width: 100%; height: 100%; object-fit: contain; }
+    .chat-logo-name { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+
+    /* ── MAIN ── */
+    #main { flex: 1; display: flex; flex-direction: column; height: 100dvh; overflow: hidden; }
+
+    /* ── WELCOME ── */
+    #welcome-screen {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 25; padding-bottom: 100px;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    #welcome-screen.hidden { opacity: 0; transform: scale(0.97); pointer-events: none; }
+    .welcome-logo-wrap {
+      width: 68px; height: 68px; border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--surface2), var(--surface3));
+      border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
+      margin-bottom: 18px; overflow: hidden;
+      animation: logoFloat 3s ease-in-out infinite;
+    }
+    @keyframes logoFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    .welcome-logo-wrap img { width: 100%; height: 100%; object-fit: contain; }
+    .welcome-logo-icon { font-size: 36px; color: var(--accent); font-family: 'Material Symbols Outlined'; font-style: normal; font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48; }
+    .welcome-title { font-size: 28px; font-weight: 700; color: var(--text); margin-bottom: 6px; letter-spacing: -0.5px; }
+    .welcome-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
+    #suggestion-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; max-width: 400px; padding: 0 16px; }
+    .chip-btn {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 20px; padding: 7px 14px;
+      font-family: var(--font); font-size: 13px; color: var(--text-muted);
+      cursor: pointer; transition: all var(--transition);
+    }
+    .chip-btn:hover { background: var(--surface3); color: var(--text); border-color: var(--accent); }
+
+    /* ── CHAT ── */
+    #chat {
+      flex: 1; overflow-y: auto; overflow-x: hidden;
+      display: flex; flex-direction: column;
+      padding: 58px 0 calc(var(--write-area-h) + env(safe-area-inset-bottom, 0px) + 10px);
+      -webkit-overflow-scrolling: touch;
+    }
+    .msg-group {
+      display: flex; flex-direction: column;
+      padding: 0 16px; margin-bottom: 16px;
+      animation: msgIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateY(12px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .msg-group.user { align-items: flex-end; }
+    .msg-group.ai { align-items: flex-start; }
+    .ai-content { width: 100%; display: flex; flex-direction: column; gap: 6px; }
+
+    .user-bubble {
+      background: var(--surface2); color: var(--text);
+      padding: 10px 15px; border-radius: 18px 18px 4px 18px;
+      font-size: var(--msg-size); line-height: 1.65; max-width: 82%;
+      word-break: break-word; cursor: pointer;
+      border: 1px solid var(--border);
+      transition: background var(--transition);
+    }
+    .user-bubble:hover { background: var(--surface3); }
+    .user-edit-area {
+      width: 100%; max-width: 82%; background: var(--surface2);
+      border: 1px solid var(--accent); border-radius: 12px;
+      padding: 10px 14px; font-family: var(--font);
+      font-size: var(--msg-size); color: var(--text);
+      outline: none; resize: none; line-height: 1.65; min-height: 44px;
+    }
+    .user-edit-actions { display: flex; gap: 6px; margin-top: 6px; }
+    .edit-confirm-btn { height: 30px; border-radius: var(--radius-sm); background: var(--accent); color: var(--bg); border: none; cursor: pointer; padding: 0 14px; font-family: var(--font); font-size: 12px; font-weight: 600; transition: opacity var(--transition); }
+    .edit-confirm-btn:hover { opacity: 0.9; }
+    .edit-cancel-btn { height: 30px; border-radius: var(--radius-sm); background: var(--surface2); color: var(--text); border: 1px solid var(--border); cursor: pointer; padding: 0 14px; font-family: var(--font); font-size: 12px; transition: background var(--transition); }
+    .edit-cancel-btn:hover { background: var(--surface3); }
+
+    /* AI Text */
+    .ai-text { font-size: var(--msg-size); line-height: 1.8; font-family: var(--font); font-weight: 400; color: var(--text); word-break: break-word; }
+    .ai-text p { margin-bottom: 8px; } .ai-text p:last-child { margin-bottom: 0; }
+    .ai-text h1, .ai-text h2, .ai-text h3 { font-weight: 700; margin: 14px 0 6px; color: var(--text); }
+    .ai-text h1 { font-size: 20px; } .ai-text h2 { font-size: 17px; } .ai-text h3 { font-size: 15px; }
+    .ai-text ul, .ai-text ol { padding-left: 20px; margin-bottom: 8px; }
+    .ai-text li { margin-bottom: 4px; }
+    .ai-text code { background: var(--surface2); border-radius: 5px; padding: 1px 6px; font-family: var(--font-mono); font-size: 12px; color: #e06c75; border: 1px solid var(--border); }
+    .ai-text pre { background: var(--bg); border-radius: var(--radius-md); padding: 0; overflow: hidden; margin-bottom: 8px; }
+    .ai-text pre code { background: none; padding: 14px; color: var(--text); display: block; overflow-x: auto; font-size: 12.5px; border: none; }
+    .ai-text blockquote { padding: 8px 12px; border-left: 3px solid var(--accent); color: var(--text-muted); margin-bottom: 8px; background: rgba(130,170,255,0.06); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+    .ai-text a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .ai-text strong { font-weight: 700; } .ai-text em { font-style: italic; }
+    .ai-text table { border-collapse: collapse; width: 100%; margin-bottom: 8px; font-size: 13px; }
+    .ai-text th, .ai-text td { padding: 7px 10px; text-align: left; border: 1px solid var(--border); }
+    .ai-text th { background: var(--surface2); font-weight: 600; }
+    .ai-text img { border-radius: var(--radius-md); max-width: 100%; display: block; margin: 6px 0; }
+    .ai-text hr { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
+    .ai-disclaimer { font-size: 11px; color: var(--text-muted); margin-top: 6px; opacity: 0.6; }
+
+    /* Code block wrapper */
+    .code-block-wrapper { background: var(--bg); border-radius: var(--radius-md); margin: 8px 0; overflow: hidden; border: 1px solid var(--border); }
+    .code-block-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--surface2); border-bottom: 1px solid var(--border); }
+    .code-block-lang { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .code-block-copy { background: transparent; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 3px 7px; border-radius: 6px; transition: all var(--transition); font-size: 12px; font-family: var(--font); }
+    .code-block-copy:hover { background: var(--surface3); color: var(--text); }
+    .code-block-copy .ms { font-size: 16px; }
+    .code-block-toggle { background: transparent; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 3px 7px; border-radius: 6px; transition: all var(--transition); font-size: 12px; font-family: var(--font); }
+    .code-block-toggle:hover { background: var(--surface3); color: var(--text); }
+    .code-block-toggle .ms { font-size: 16px; }
+    .code-block-wrapper.collapsed pre { display: none; }
+    .code-block-wrapper.collapsed { border-bottom: none; }
+    .code-block-header-actions { display: flex; align-items: center; gap: 2px; }
+
+    /* Rich link cards */
+    .rich-link-card { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); padding: 10px 12px; border-radius: var(--radius-md); margin: 6px 0; overflow: hidden; transition: border-color var(--transition); }
+    .rich-link-card:hover { border-color: var(--text-muted); }
+    .rich-link-favicon { width: 26px; height: 26px; border-radius: 6px; object-fit: contain; background: var(--surface2); flex-shrink: 0; }
+    .rich-link-favicon-ph { width: 26px; height: 26px; border-radius: 6px; background: var(--surface2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .rich-link-favicon-ph .ms { font-size: 15px; color: var(--text-muted); }
+    .rich-link-info { flex: 1; min-width: 0; }
+    .rich-link-title { font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .rich-link-url { font-size: 10px; color: var(--text-muted); margin-top: 1px; font-family: var(--font-mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .rich-link-actions { display: flex; gap: 3px; flex-shrink: 0; }
+    .rich-link-btn { width: 28px; height: 28px; border-radius: var(--radius-sm); background: var(--surface2); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: all var(--transition); }
+    .rich-link-btn:hover { background: var(--surface3); color: var(--text); }
+    .rich-link-btn .ms { font-size: 15px; }
+    .rich-link-card.image-card, .rich-link-card.video-card, .rich-link-card.audio-card { flex-direction: column; align-items: stretch; }
+    .rlc-top { display: flex; align-items: center; gap: 10px; width: 100%; }
+    .rlc-top .rich-link-info { flex: 1; min-width: 0; } .rlc-top .rich-link-actions { flex-shrink: 0; }
+    .rlc-image-wrap { position: relative; margin-top: 8px; border-radius: var(--radius-sm); overflow: hidden; }
+    .rlc-image-wrap img { width: 100%; display: block; object-fit: cover; max-height: 240px; }
+    .rlc-img-save { position: absolute; bottom: 8px; right: 8px; width: 32px; height: 32px; border-radius: var(--radius-sm); background: rgba(0,0,0,.6); display: flex; align-items: center; justify-content: center; text-decoration: none; backdrop-filter: blur(4px); transition: background var(--transition); }
+    .rlc-img-save:hover { background: rgba(0,0,0,.8); }
+    .rlc-img-save .ms { font-size: 18px; color: #fff; }
+
+    /* Status messages */
+    .status-msg { display: flex; flex-direction: column; padding: 4px 0; background: transparent; width: fit-content; max-width: 92%; }
+    .status-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .status-icon-wrap { width: 18px; height: 18px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .status-hex {
+      font-size: 17px; color: var(--accent);
+      animation: spin 1.8s linear infinite; display: inline-block;
+      font-family: 'Material Symbols Outlined'; font-style: normal;
+      font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+    }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+    .status-logo-img { display: none; width: 16px; height: 16px; border-radius: 4px; object-fit: contain; }
+    .status-complete .status-hex { animation: none; display: none; }
+    .status-complete .status-logo-img { display: block; }
+    .status-title { font-size: 12px; font-weight: 500; color: var(--text-muted); }
+    .status-complete .status-title { font-size: 11px; }
+    .status-steps { display: flex; flex-direction: column; gap: 3px; }
+    .step-item { display: flex; align-items: flex-start; gap: 5px; font-size: 12px; color: var(--text-muted); }
+    .step-item .ms { font-size: 13px; margin-top: 1px; }
+    .step-item.done .ms { color: var(--green); }
+    .step-item.error .ms { color: var(--danger); }
+    .status-complete { padding-bottom: 8px; margin-bottom: 10px; }
+    .msg-group.status-done { margin-bottom: 4px; }
+
+    /* Aurora shimmer */
+    .loading-shine {
+      background: linear-gradient(100deg, var(--text-muted) 0%, var(--text) 20%, var(--accent) 35%, var(--text) 50%, var(--text-muted) 65%, var(--text) 80%, var(--accent) 95%, var(--text-muted) 100%);
+      background-size: 300% 100%;
+      -webkit-background-clip: text; background-clip: text;
+      color: transparent; animation: aurora-shine 2.2s ease-in-out infinite; font-weight: 600;
+    }
+    @keyframes aurora-shine { 0% { background-position: 200% center; } 100% { background-position: -100% center; } }
+    .step-item:not(.done):not(.error) span:last-child {
+      background: linear-gradient(100deg, var(--text-muted) 0%, var(--text) 25%, var(--accent) 45%, var(--text) 65%, var(--text-muted) 85%);
+      background-size: 300% 100%; -webkit-background-clip: text; background-clip: text;
+      color: transparent; animation: aurora-shine 2s ease-in-out infinite;
+    }
+    .status-complete .status-title.loading-shine { background: none; color: var(--text-muted); animation: none; -webkit-background-clip: unset; background-clip: unset; font-weight: 500; }
+    .error-block { background: rgba(255,138,128,0.1); border: 1px solid rgba(255,138,128,0.3); border-radius: var(--radius-md); padding: 10px 14px; margin-top: 8px; max-width: 82%; font-family: var(--font); font-size: 13px; color: var(--danger); display: flex; align-items: center; gap: 8px; }
+    .error-block .ms { color: var(--danger); }
+
+    /* Msg actions */
+    .msg-actions { display: flex; align-items: center; margin-top: 4px; gap: 2px; opacity: 0; transition: opacity 0.15s; flex-wrap: wrap; }
+    .msg-group:hover .msg-actions, .msg-group:last-child .msg-actions { opacity: 1; }
+    .act-btn {
+      height: 26px; border-radius: var(--radius-sm); background: none; border: none;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      padding: 0 6px; gap: 3px; color: var(--text-muted);
+      transition: all var(--transition);
+    }
+    .act-btn:hover { background: var(--surface2); color: var(--text); }
+    .act-btn .ms { font-size: 14px; }
+    .act-btn-lbl { font-size: 11px; color: var(--text-muted); }
+    .used-api-badge { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 2px 8px; }
+
+    /* User attach */
+    .user-attach-row { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 6px; justify-content: flex-end; }
+    .user-attach-tag { display: flex; align-items: center; gap: 4px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 4px 8px; font-size: 11px; font-family: var(--font-mono); color: var(--text-muted); max-width: 180px; }
+    .user-attach-tag .ms { font-size: 13px; flex-shrink: 0; }
+
+    /* ── WRITE AREA ── */
+    #write-area {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+      background: rgba(23,24,26,0.95);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+      z-index: 40;
+    }
+    .write-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      display: flex; flex-direction: column;
+      padding: 10px 12px 8px 16px;
+      max-width: 860px; margin: 0 auto;
+      transition: border-color var(--transition);
+    }
+    .write-bar:focus-within { border-color: rgba(130,170,255,0.5); box-shadow: 0 0 0 3px rgba(130,170,255,0.08); }
+    .write-bar-inner { position: relative; width: 100%; display: flex; flex-direction: column; }
+    .write-bar textarea {
+      width: 100%; background: transparent; border: none; outline: none;
+      resize: none; font-family: var(--font); font-size: 14px;
+      color: var(--text); line-height: 1.55; max-height: 140px; min-height: 38px;
+      padding: 3px 4px;
+    }
+    .write-bar textarea::placeholder { color: var(--text-muted); }
+    .write-bar-bottom { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; gap: 2px; }
+    .write-bar-left, .write-bar-right { display: flex; align-items: center; gap: 2px; }
+
+    #model-pill-btn {
+      height: 30px; border-radius: 20px;
+      background: var(--surface2); border: 1px solid var(--border);
+      display: flex; align-items: center; gap: 5px; padding: 0 11px;
+      cursor: pointer; font-family: var(--font); font-size: 12px;
+      color: var(--text-muted); font-weight: 500; white-space: nowrap;
+      transition: all var(--transition);
+    }
+    #model-pill-btn:hover { background: var(--surface3); color: var(--text); }
+    #model-pill-btn .ms { font-size: 14px; }
+
+    .write-tool-btn {
+      width: 34px; height: 34px; border-radius: var(--radius-sm);
+      background: transparent; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted); transition: all var(--transition);
+    }
+    .write-tool-btn:hover { background: var(--surface2); color: var(--text); }
+    .write-tool-btn .ms { font-size: 20px; }
+
+    #filter-btn {
+      height: 34px; border-radius: var(--radius-sm);
+      background: transparent; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted); padding: 0 6px; transition: all var(--transition);
+    }
+    #filter-btn:hover { background: var(--surface2); color: var(--text); }
+    #filter-btn .ms { font-size: 20px; transition: color var(--transition), font-variation-settings var(--transition); }
+    #filter-btn.active .ms { color: var(--accent); font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24; }
+
+    .write-btn {
+      width: 34px; height: 34px; border-radius: var(--radius-sm);
+      background: transparent; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted); transition: all var(--transition);
+    }
+    .write-btn:hover { background: var(--surface2); color: var(--text); }
+    .write-btn .ms { font-size: 20px; }
+
+    .send-btn {
+      width: 34px; height: 34px; border-radius: var(--radius-sm);
+      background: var(--surface2); border: 1px solid var(--border);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted);
+      transition: all var(--transition);
+    }
+    .send-btn:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+    .send-btn.stop-mode { background: rgba(255,138,128,0.15); color: var(--danger); border-color: rgba(255,138,128,0.3); }
+    .send-btn .ms { font-size: 18px; }
+
+    /* Attached files */
+    .attached-files { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 0 6px; }
+    .attach-chip { display: flex; align-items: center; gap: 5px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 5px 8px; max-width: 200px; }
+    .attach-chip .ms { font-size: 13px; flex-shrink: 0; color: var(--text-muted); }
+    .attach-chip-name { font-size: 11px; font-family: var(--font-mono); color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; }
+    .attach-chip-remove { width: 16px; height: 16px; border-radius: 4px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .attach-chip-remove .ms { font-size: 13px; color: var(--text-muted); }
+    .attach-loading { display: flex; align-items: center; gap: 6px; padding: 5px 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+    .attach-loading-spinner { width: 12px; height: 12px; border: 2px solid var(--surface3); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+    .attach-loading-txt { font-size: 11px; font-family: var(--font-mono); color: var(--text-muted); }
+
+    /* STT */
+    .stt-lang-opt { display: flex; align-items: center; gap: 10px; padding: 8px 4px; cursor: pointer; border-radius: var(--radius-sm); transition: background var(--transition); }
+    .stt-lang-opt:hover { background: var(--surface2); }
+    .stt-lang-dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--text-muted); flex-shrink: 0; }
+    .stt-lang-opt.selected .stt-lang-dot { background: var(--accent); border-color: var(--accent); }
+    .stt-lang-name { font-size: 13px; color: var(--text); }
+    .stt-lang-code { font-size: 10px; font-family: var(--font-mono); color: var(--text-muted); margin-left: auto; }
+
+    /* STT interim */
+    .stt-interim { font-size: 13px; color: var(--text-muted); font-style: italic; padding: 3px 4px; }
+
+    /* Scroll down button */
+    #scroll-down-btn {
+      position: fixed; bottom: calc(var(--write-area-h, 120px) + 10px); left: 50%;
+      transform: translateX(-50%) scale(0.8);
+      width: 34px; height: 34px; border-radius: 50%;
+      background: var(--surface2); border: 1px solid var(--border);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted); opacity: 0; pointer-events: none;
+      transition: all var(--transition); z-index: 45;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    #scroll-down-btn.show { opacity: 1; pointer-events: all; transform: translateX(-50%) scale(1); }
+    #scroll-down-btn:hover { background: var(--surface3); color: var(--text); }
+    #scroll-down-btn .ms { font-size: 18px; }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: calc(var(--write-area-h, 120px) + 56px); left: 50%;
+      transform: translateX(-50%) translateY(8px);
+      background: var(--surface2); border: 1px solid var(--border);
+      color: var(--text); font-size: 13px; padding: 8px 16px;
+      border-radius: 20px; opacity: 0; pointer-events: none;
+      transition: all 0.25s ease; z-index: 500;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4); white-space: nowrap;
+      backdrop-filter: blur(12px);
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* Focus */
+    *:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+    @media (max-width: 600px) {
+      .write-bar { padding: 8px 10px 6px 12px; }
+      .write-bar textarea { font-size: 15px; }
+      .msg-group { padding: 0 10px; }
+    }
+    @media (min-width: 900px) {
+      #chat { padding-left: calc((100% - 860px) / 2 + 16px); padding-right: calc((100% - 860px) / 2 + 16px); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="overlay" id="sidebar-overlay"></div>
+<div class="overlay" id="sheet-overlay"></div>
+<div class="overlay" id="settings-overlay"></div>
+
+<!-- LEFT SIDEBAR -->
+<div id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-title-row">
+      <span class="sidebar-title">Conversations</span>
+      <button class="icon-btn" id="sidebar-close-btn" title="Close"><span class="ms">close</span></button>
+    </div>
+    <div class="sidebar-search">
+      <span class="ms">search</span>
+      <input type="text" id="history-search" placeholder="Search chats…">
+    </div>
+    <button class="sidebar-new-btn" id="sidebar-new-chat-btn"><span class="ms">add</span> New Chat</button>
+  </div>
+  <div class="sidebar-history" id="sidebar-history"><div class="history-empty">No conversations yet</div></div>
+</div>
+
+<!-- SETTINGS PANEL -->
+<div id="settings-sheet">
+  <div class="settings-header">
+    <span class="settings-header-title">Settings</span>
+    <button class="icon-btn" id="settings-close-btn" title="Close"><span class="ms">close</span></button>
+  </div>
+  <div class="settings-content">
+    <div class="setting-group">
+      <span class="setting-label">API Key</span>
+      <input type="password" id="setting-api-key" class="setting-input" placeholder="gsk_...">
+    </div>
+    <div class="setting-group">
+      <span class="setting-label">Temperature</span>
+      <div class="range-row">
+        <input type="range" id="setting-temperature" min="0" max="2" step="0.05" value="1">
+        <span class="range-val" id="temp-val">1.00</span>
+      </div>
+    </div>
+    <div class="setting-group">
+      <span class="setting-label">Max Tokens</span>
+      <div class="range-row">
+        <input type="range" id="setting-max-tokens" min="256" max="8192" step="64" value="2048">
+        <span class="range-val" id="tokens-val">2048</span>
+      </div>
+    </div>
+    <div class="setting-group">
+      <span class="setting-label">Message Font Size</span>
+      <div class="range-row">
+        <input type="range" id="setting-msg-size" min="12" max="22" step="1" value="15">
+        <span class="range-val" id="msg-size-val">15px</span>
+      </div>
+    </div>
+    <div class="setting-group">
+      <span class="setting-label">Voice Language</span>
+      <div id="stt-lang-options" style="display:flex;flex-direction:column;gap:2px;"></div>
+    </div>
+    <button class="setting-btn" id="save-settings-btn"><span class="ms">save</span> Save Configuration</button>
+    <button class="setting-btn" id="reset-settings-btn"><span class="ms">restart_alt</span> Reset Configuration</button>
+    <hr class="settings-divider">
+    <button class="setting-btn" onclick="window.open('https://apis.prexzyvilla.site','_blank')"><span class="ms">api</span> API Source</button>
+    <button class="setting-btn" onclick="window.open('https://groq.com','_blank')"><span class="ms">link</span> Groq Cloud</button>
+    <button class="setting-btn" id="download-source-btn"><span class="ms">download</span> Download Source</button>
+    <button class="setting-btn" id="connect-dev-btn"><span class="ms">code</span> Connect Developer</button>
+    <hr class="settings-divider">
+    <button class="setting-btn danger" id="delete-chats-btn"><span class="ms">delete_forever</span> Delete All Chats</button>
+    <button class="setting-btn danger" id="delete-all-data-btn"><span class="ms">warning</span> Delete All Data</button>
+  </div>
+  <div class="settings-footer"><strong>HaiLite</strong> — Created by <strong>HaiLite</strong></div>
+</div>
+
+<!-- MODEL SHEET -->
+<div id="model-sheet" class="bottom-sheet">
+  <div class="sheet-handle" id="model-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title">Choose Model</span>
+    <button class="sheet-close" id="model-close-btn"><span class="ms">close</span></button>
+  </div>
+  <div id="model-options"></div>
+</div>
+
+<!-- FILTER MODE SHEET -->
+<div id="filter-sheet" class="bottom-sheet">
+  <div class="sheet-handle" id="filter-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title">Filter Mode</span>
+    <button class="sheet-close" id="filter-close-btn"><span class="ms">close</span></button>
+  </div>
+  <div id="filter-options">
+    <div class="filter-mode-row selected" data-mode="">
+      <div class="filter-mode-left">
+        <div class="filter-mode-icon"><span class="ms">chat</span></div>
+        <div class="filter-mode-info"><div class="filter-mode-name">Default</div><div class="filter-mode-sub">Normal conversation mode</div></div>
+      </div>
+      <span class="ms filter-mode-check">check_circle</span>
+    </div>
+    <div class="filter-mode-row" data-mode="download">
+      <div class="filter-mode-left">
+        <div class="filter-mode-icon"><span class="ms">download</span></div>
+        <div class="filter-mode-info"><div class="filter-mode-name">Download Links</div><div class="filter-mode-sub">Find direct download links</div></div>
+      </div>
+      <span class="ms filter-mode-check">check_circle</span>
+    </div>
+    <div class="filter-mode-row" data-mode="image">
+      <div class="filter-mode-left">
+        <div class="filter-mode-icon"><span class="ms">image</span></div>
+        <div class="filter-mode-info"><div class="filter-mode-name">Create Image</div><div class="filter-mode-sub">Generate images via available APIs</div></div>
+      </div>
+      <span class="ms filter-mode-check">check_circle</span>
+    </div>
+    <div class="filter-mode-row" data-mode="sound">
+      <div class="filter-mode-left">
+        <div class="filter-mode-icon"><span class="ms">music_note</span></div>
+        <div class="filter-mode-info"><div class="filter-mode-name">Search Sound / Music</div><div class="filter-mode-sub">Find audio tracks and sound effects</div></div>
+      </div>
+      <span class="ms filter-mode-check">check_circle</span>
+    </div>
+    <div class="filter-mode-row" data-mode="apis">
+      <div class="filter-mode-left">
+        <div class="filter-mode-icon"><span class="ms">api</span></div>
+        <div class="filter-mode-info"><div class="filter-mode-name">Search APIs</div><div class="filter-mode-sub">Explore and list available APIs</div></div>
+      </div>
+      <span class="ms filter-mode-check">check_circle</span>
+    </div>
+  </div>
+  <div style="height:calc(env(safe-area-inset-bottom,0px) + 14px);"></div>
+</div>
+
+<!-- USER ACTIONS SHEET -->
+<div id="user-actions-sheet" class="bottom-sheet">
+  <div class="sheet-handle" id="user-actions-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title">Message</span>
+    <button class="sheet-close" id="user-actions-close-btn"><span class="ms">close</span></button>
+  </div>
+  <div id="user-actions-body">
+    <div class="user-action-row" id="ua-edit">
+      <div class="user-action-icon"><span class="ms">edit</span></div>
+      <span class="user-action-label">Edit message</span>
+    </div>
+    <div class="user-action-row" id="ua-copy">
+      <div class="user-action-icon"><span class="ms">content_copy</span></div>
+      <span class="user-action-label">Copy message</span>
+    </div>
+    <div class="user-action-row" id="ua-retry">
+      <div class="user-action-icon"><span class="ms">refresh</span></div>
+      <span class="user-action-label">Retry from here</span>
+    </div>
+  </div>
+  <div style="height:calc(env(safe-area-inset-bottom,0px) + 14px);"></div>
+</div>
+
+<!-- UPLOAD SHEET -->
+<div id="upload-sheet" class="bottom-sheet">
+  <div class="sheet-handle" id="upload-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title">Attach File</span>
+    <button class="sheet-close" id="upload-close-btn"><span class="ms">close</span></button>
+  </div>
+  <div>
+    <div class="upload-option-row" id="upload-image-ocr">
+      <div class="upload-option-icon"><span class="ms">image_search</span></div>
+      <div><div class="upload-option-label">Image OCR</div><div class="upload-option-sub">Extract text from a photo or screenshot</div></div>
+    </div>
+    <div class="upload-option-row" id="upload-text-doc">
+      <div class="upload-option-icon"><span class="ms">description</span></div>
+      <div><div class="upload-option-label">Text Document</div><div class="upload-option-sub">Upload .txt, .md, .csv, .json…</div></div>
+    </div>
+  </div>
+  <div style="height:calc(env(safe-area-inset-bottom,0px) + 14px);"></div>
+</div>
+
+<!-- API DETAIL SHEET -->
+<div id="api-detail-sheet" class="bottom-sheet">
+  <div class="sheet-handle" id="api-detail-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title" id="api-sheet-title">APIs</span>
+    <button class="sheet-close" id="api-detail-close-btn"><span class="ms">close</span></button>
+  </div>
+  <div class="api-detail-body" id="api-detail-body"></div>
+</div>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="top-bar-left">
+    <button class="icon-btn" id="sidebar-open-btn" title="Open sidebar"><span class="ms">menu</span></button>
+    <div class="chat-logo">
+      <div class="logo-img-wrap">
+        <img src="logo.png" alt="" onerror="this.onerror=null;this.src='/favicon.png'">
+      </div>
+      <span class="chat-logo-name">HaiLite</span>
+    </div>
+  </div>
+  <div class="top-bar-right">
+    <button class="icon-btn" id="new-chat-btn" title="New chat"><span class="ms">add_comment</span></button>
+    <button class="icon-btn" id="settings-open-btn" title="Settings"><span class="ms">tune</span></button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+  <div id="welcome-screen">
+    <div class="welcome-logo-wrap">
+      <img src="logo.png" alt="HaiLite" onerror="this.onerror=null;this.src='/favicon.png'">
+    </div>
+    <div class="welcome-title">HaiLite</div>
+    <div class="welcome-subtitle">Your intelligent multi-API assistant</div>
+    <div id="suggestion-chips"></div>
+  </div>
+  <div id="chat"></div>
+  <div id="write-area">
+    <div class="write-bar">
+      <div class="write-bar-inner">
+        <div class="attached-files" id="attached-files" style="display:none;"></div>
+        <textarea id="write-input" rows="1" placeholder="Message HaiLite…"></textarea>
+      </div>
+      <div class="write-bar-bottom">
+        <div class="write-bar-left">
+          <button id="model-pill-btn"><span class="ms">psychology</span><span id="model-pill-label">Kimi K2</span></button>
+        </div>
+        <div class="write-bar-right">
+          <input type="file" id="file-input-ocr" accept="image/*" style="display:none">
+          <input type="file" id="file-input-doc" accept=".txt,.md,.csv,.json,.xml,.html,.js,.py,.css,.log" style="display:none">
+          <button id="filter-btn" title="Filter mode"><span class="ms">filter_alt</span></button>
+          <button class="write-tool-btn" id="add-btn" title="Attach file"><span class="ms">attach_file</span></button>
+          <button class="write-btn" id="voice-btn" title="Voice input"><span class="ms">mic</span></button>
+          <button class="send-btn" id="send-btn" title="Send"><span class="ms">arrow_upward</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button id="scroll-down-btn" title="Scroll to bottom"><span class="ms">keyboard_arrow_down</span></button>
+<div id="toast" class="toast"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const chatEl = document.getElementById('chat');
+  const writeInput = document.getElementById('write-input');
+  const sendBtn = document.getElementById('send-btn');
+  const newChatBtn = document.getElementById('new-chat-btn');
+  const welcomeScreen = document.getElementById('welcome-screen');
+  const toast = document.getElementById('toast');
+  const suggestionChipsEl = document.getElementById('suggestion-chips');
+  const sidebar = document.getElementById('sidebar');
+  const sidebarHistory = document.getElementById('sidebar-history');
+  const sidebarOverlay = document.getElementById('sidebar-overlay');
+  const settingsSheet = document.getElementById('settings-sheet');
+  const modelSheet = document.getElementById('model-sheet');
+  const filterSheet = document.getElementById('filter-sheet');
+  const apiDetailSheet = document.getElementById('api-detail-sheet');
+  const userActionsSheet = document.getElementById('user-actions-sheet');
+  const sheetOverlay = document.getElementById('sheet-overlay');
+  const settingApiKey = document.getElementById('setting-api-key');
+  const settingTemperature = document.getElementById('setting-temperature');
+  const settingMaxTokens = document.getElementById('setting-max-tokens');
+  const settingMsgSize = document.getElementById('setting-msg-size');
+  const tempVal = document.getElementById('temp-val');
+  const tokensVal = document.getElementById('tokens-val');
+  const msgSizeVal = document.getElementById('msg-size-val');
+
+  const DEFAULT_API_KEY = "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";
+  const DEFAULT_MODEL_ID = 'moonshotai/kimi-k2-instruct';
+  const DEFAULT_TEMPERATURE = 1, DEFAULT_MAX_TOKENS = 2048, DEFAULT_MSG_SIZE = 15, DEFAULT_STT_LANG = 'auto';
+  const FALLBACK_KEYS = [DEFAULT_API_KEY];
+
+  const STT_LANGUAGES = [
+    { label:'Auto Detect', code:'auto', bcp:'' },
+    { label:'English',     code:'en',   bcp:'en-US' },
+    { label:'Bangla',      code:'bn',   bcp:'bn-BD' },
+    { label:'Hindi',       code:'hi',   bcp:'hi-IN' },
+  ];
+
+  const MODELS = [
+    { label:'Kimi K2',       id:'moonshotai/kimi-k2-instruct' },
+    { label:'Llama 3.3 70B', id:'llama-3.3-70b-versatile' },
+    { label:'Llama 3.1 8B',  id:'llama-3.1-8b-instant' },
+    { label:'Llama 4 Scout', id:'meta-llama/llama-4-scout-17b-16e-instruct' },
+    { label:'Gemma 2 9B',    id:'gemma2-9b-it' },
+    { label:'Mixtral 8x7B',  id:'mixtral-8x7b-32768' },
+  ];
+
+  const FILTER_MODES = [
+    { mode:'',         label:'Default',        placeholder:'Message HaiLite…' },
+    { mode:'download', label:'Download Links', placeholder:'What do you want to download…' },
+    { mode:'image',    label:'Create Image',   placeholder:'Describe the image to create…' },
+    { mode:'sound',    label:'Sound / Music',  placeholder:'Search for sound or music…' },
+    { mode:'apis',     label:'Search APIs',    placeholder:'Find APIs for…' },
+  ];
+
+  let activeFilterMode = '';
+  let API_KEY = localStorage.getItem('html_ai_key') || DEFAULT_API_KEY;
+  let MODEL = localStorage.getItem('html_ai_model') || DEFAULT_MODEL_ID;
+  let TEMPERATURE = parseFloat(localStorage.getItem('html_ai_temp') || DEFAULT_TEMPERATURE);
+  let MAX_TOKENS = parseInt(localStorage.getItem('html_ai_max_tokens') || DEFAULT_MAX_TOKENS);
+  let MSG_SIZE = parseInt(localStorage.getItem('html_ai_msg_size') || DEFAULT_MSG_SIZE);
+  let STT_LANG = localStorage.getItem('html_ai_stt_lang') || DEFAULT_STT_LANG;
+  let lastSearchedApis = [], lastUsedApis = [], lastErrorApis = [];
+  let isGenerating = false, abortController = null, hasStartedChat = false, currentChatId = null;
+
+  function applyMsgSize(sz) { document.documentElement.style.setProperty('--msg-size', sz + 'px'); }
+  applyMsgSize(MSG_SIZE);
+  marked.setOptions({ breaks:true, gfm:true });
+
+  // ── settings UI ──
+  function applySettingsToUI() {
+    settingApiKey.value = API_KEY;
+    settingTemperature.value = TEMPERATURE; tempVal.textContent = TEMPERATURE.toFixed(2);
+    settingMaxTokens.value = MAX_TOKENS; tokensVal.textContent = MAX_TOKENS;
+    settingMsgSize.value = MSG_SIZE; msgSizeVal.textContent = MSG_SIZE + 'px';
+    renderSttLangOptions();
+  }
+  function renderSttLangOptions() {
+    const c = document.getElementById('stt-lang-options'); if (!c) return; c.innerHTML = '';
+    STT_LANGUAGES.forEach(lang => {
+      const row = document.createElement('div');
+      row.className = 'stt-lang-opt' + (STT_LANG === lang.code ? ' selected' : '');
+      row.innerHTML = `<div class="stt-lang-dot"></div><span class="stt-lang-name">${lang.label}</span><span class="stt-lang-code">${lang.code==='auto'?'—':lang.bcp}</span>`;
+      row.addEventListener('click', () => { STT_LANG = lang.code; renderSttLangOptions(); showToast('Voice: ' + lang.label); });
+      c.appendChild(row);
+    });
+  }
+  applySettingsToUI();
+  settingTemperature.addEventListener('input', () => tempVal.textContent = parseFloat(settingTemperature.value).toFixed(2));
+  settingMaxTokens.addEventListener('input', () => tokensVal.textContent = settingMaxTokens.value);
+  settingMsgSize.addEventListener('input', () => { const v = parseInt(settingMsgSize.value); msgSizeVal.textContent = v+'px'; applyMsgSize(v); });
+
+  function getModelLabel(id) { return (MODELS.find(m => m.id === id)||{}).label || id.split('/').pop(); }
+  document.getElementById('model-pill-label').textContent = getModelLabel(MODEL);
+
+  // ── sheets ──
+  const uploadSheet = document.getElementById('upload-sheet');
+  const allSheets = [modelSheet, filterSheet, apiDetailSheet, userActionsSheet, uploadSheet];
+
+  function openSheet(s) { allSheets.forEach(x => { if (x !== s) x.classList.remove('open'); }); s.classList.add('open'); sheetOverlay.classList.add('show'); }
+  function closeSheet(s) { s.classList.remove('open'); if (!allSheets.some(x => x.classList.contains('open'))) sheetOverlay.classList.remove('show'); }
+  function closeAllSheets() { allSheets.forEach(s => s.classList.remove('open')); sheetOverlay.classList.remove('show'); }
+
+  const settingsOverlay = document.getElementById('settings-overlay');
+  function openSettings() { settingsSheet.classList.add('open'); settingsOverlay.classList.add('show'); }
+  function closeSettings() { settingsSheet.classList.remove('open'); settingsOverlay.classList.remove('show'); }
+
+  settingsOverlay.addEventListener('click', closeSettings);
+  sheetOverlay.addEventListener('click', closeAllSheets);
+
+  document.getElementById('model-close-btn').addEventListener('click', () => closeSheet(modelSheet));
+  document.getElementById('filter-close-btn').addEventListener('click', () => closeSheet(filterSheet));
+  document.getElementById('user-actions-close-btn').addEventListener('click', () => closeSheet(userActionsSheet));
+  document.getElementById('api-detail-close-btn').addEventListener('click', () => closeSheet(apiDetailSheet));
+  document.getElementById('upload-close-btn').addEventListener('click', () => closeSheet(uploadSheet));
+
+  function makeDraggable(hEl, sheet) {
+    const target = sheet;
+    let startY = null, lastY = null, dy = 0, velY = 0, lastT = 0, dragging = false;
+    const DISMISS_DIST = 80, DISMISS_VEL = 0.4;
+    function onStart(y, el) {
+      if (el && el.closest('button,input,textarea,select,a,.model-option,.filter-mode-row,.user-action-row,.upload-option-row,.stt-lang-opt,.setting-btn')) return;
+      startY = y; lastY = y; dy = 0; velY = 0; lastT = Date.now(); dragging = true;
+      sheet.style.transition = 'none';
+    }
+    function onMove(y) {
+      if (!dragging || startY === null) return;
+      const now = Date.now(); const dt = now - lastT || 1;
+      const newDy = y - startY; velY = (y - lastY) / dt; lastY = y; lastT = now;
+      if (newDy > 0) { dy = newDy; sheet.style.transform = `translateY(${dy}px)`; }
+    }
+    function onEnd() {
+      if (!dragging) return; dragging = false; sheet.style.transition = '';
+      if (dy > DISMISS_DIST || velY > DISMISS_VEL) {
+        sheet.style.transform = 'translateY(100%)';
+        setTimeout(() => { sheet.style.transform = ''; closeSheet(sheet); }, 340);
+      } else { sheet.style.transform = ''; }
+      startY = null; dy = 0; velY = 0;
+    }
+    target.addEventListener('touchstart', e => onStart(e.touches[0].clientY, e.target), { passive:true });
+    target.addEventListener('touchmove',  e => { if (dragging) e.preventDefault(); onMove(e.touches[0].clientY); }, { passive:false });
+    target.addEventListener('touchend',   () => onEnd());
+    target.addEventListener('touchcancel',() => { dragging=false; sheet.style.transition=''; sheet.style.transform=''; startY=null; dy=0; });
+  }
+  makeDraggable(document.getElementById('model-handle'), modelSheet);
+  makeDraggable(document.getElementById('filter-handle'), filterSheet);
+  makeDraggable(document.getElementById('user-actions-handle'), userActionsSheet);
+  makeDraggable(document.getElementById('api-detail-handle'), apiDetailSheet);
+  makeDraggable(document.getElementById('upload-handle'), uploadSheet);
+
+  // ── sidebar ──
+  document.getElementById('sidebar-open-btn').addEventListener('click', () => { sidebar.classList.add('open'); sidebarOverlay.classList.add('show'); });
+  document.getElementById('sidebar-close-btn').addEventListener('click', () => { sidebar.classList.remove('open'); sidebarOverlay.classList.remove('show'); });
+  sidebarOverlay.addEventListener('click', () => { sidebar.classList.remove('open'); sidebarOverlay.classList.remove('show'); });
+  document.getElementById('sidebar-new-chat-btn').addEventListener('click', () => { startNewChat(); sidebar.classList.remove('open'); sidebarOverlay.classList.remove('show'); });
+
+  document.getElementById('settings-open-btn').addEventListener('click', openSettings);
+  document.getElementById('settings-close-btn').addEventListener('click', closeSettings);
+  newChatBtn.addEventListener('click', startNewChat);
+
+  // ── history search ──
+  document.getElementById('history-search').addEventListener('input', function() { renderSidebarHistory(this.value); });
+
+  // ── filter sheet ──
+  const filterBtn = document.getElementById('filter-btn');
+  filterBtn.addEventListener('click', () => { renderFilterOptions(); openSheet(filterSheet); });
+  function renderFilterOptions() {
+    document.getElementById('filter-options').querySelectorAll('.filter-mode-row').forEach(row => {
+      row.classList.toggle('selected', row.dataset.mode === activeFilterMode);
+    });
+  }
+  document.getElementById('filter-options').addEventListener('click', e => {
+    const row = e.target.closest('.filter-mode-row'); if (!row) return;
+    const mode = row.dataset.mode; activeFilterMode = mode;
+    filterBtn.classList.toggle('active', mode !== '');
+    const mf = FILTER_MODES.find(f => f.mode === mode);
+    writeInput.placeholder = mf ? mf.placeholder : 'Message HaiLite…';
+    renderFilterOptions(); closeSheet(filterSheet);
+    showToast(mode !== '' ? (mf ? mf.label : mode) + ' mode active' : 'Filter cleared');
+  });
+
+  // ── model sheet ──
+  function renderModelOptions() {
+    const c = document.getElementById('model-options'); c.innerHTML = '';
+    MODELS.forEach(m => {
+      const d = document.createElement('div');
+      d.className = 'model-option' + (m.id === MODEL ? ' selected' : '');
+      d.innerHTML = `<div class="model-option-info"><div class="model-option-name">${m.label}</div><div class="model-option-id">${m.id}</div></div><span class="ms model-option-check">check_circle</span>`;
+      d.addEventListener('click', () => {
+        MODEL = m.id; localStorage.setItem('html_ai_model', MODEL);
+        document.getElementById('model-pill-label').textContent = m.label;
+        renderModelOptions(); closeSheet(modelSheet); showToast('Model: ' + m.label);
+      });
+      c.appendChild(d);
+    });
+  }
+  renderModelOptions();
+  document.getElementById('model-pill-btn').addEventListener('click', () => { renderModelOptions(); openSheet(modelSheet); });
+
+  // ── user actions ──
+  let activeUserGroup = null;
+  function openUserActionsSheet(group) { activeUserGroup = group; openSheet(userActionsSheet); }
+  document.getElementById('ua-edit').addEventListener('click', () => { const g = activeUserGroup; closeSheet(userActionsSheet); if (g) enterEditMode(g); });
+  document.getElementById('ua-copy').addEventListener('click', () => { const g = activeUserGroup; closeSheet(userActionsSheet); if (g) { const b = g.querySelector('.user-bubble'); if (b) safeCopy(b.textContent); } });
+  document.getElementById('ua-retry').addEventListener('click', () => { const g = activeUserGroup; closeSheet(userActionsSheet); if (g) { const b = g.querySelector('.user-bubble'); retryFromUserMessage(g, b ? b.textContent : ''); } });
+
+  function attachUserBubbleHandlers(group) {
+    const bubble = group.querySelector('.user-bubble'); if (!bubble) return;
+    const newBubble = bubble.cloneNode(true); bubble.parentNode.replaceChild(newBubble, bubble);
+    newBubble.addEventListener('click', e => { e.stopPropagation(); openUserActionsSheet(group); });
+  }
+  function reattachUserBubbleHandlers() { document.querySelectorAll('.msg-group.user').forEach(g => attachUserBubbleHandlers(g)); }
+
+  function enterEditMode(group) {
+    const bubble = group.querySelector('.user-bubble'); if (!bubble) return;
+    const orig = bubble.textContent || ''; bubble.style.display = 'none';
+    const ta = document.createElement('textarea'); ta.className = 'user-edit-area'; ta.value = orig;
+    setTimeout(() => { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; }, 0);
+    ta.addEventListener('input', function () { this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px'; });
+    const row = document.createElement('div'); row.className = 'user-edit-actions';
+    row.innerHTML = '<button class="edit-confirm-btn">Send</button><button class="edit-cancel-btn">Cancel</button>';
+    group.appendChild(ta); group.appendChild(row); ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length);
+    row.querySelector('.edit-cancel-btn').addEventListener('click', () => { ta.remove(); row.remove(); bubble.style.display = ''; });
+    row.querySelector('.edit-confirm-btn').addEventListener('click', () => {
+      const txt = ta.value.trim(); if (!txt) return;
+      ta.remove(); row.remove(); bubble.textContent = txt; bubble.style.display = '';
+      retryFromUserMessage(group, txt, true);
+    });
+  }
+
+  function retryFromUserMessage(group, text, updateHistory = false) {
+    if (isGenerating) return;
+    const all = Array.from(chatEl.querySelectorAll('.msg-group'));
+    const idx = all.indexOf(group);
+    for (let i = idx + 1; i < all.length; i++) all[i].remove();
+    if (updateHistory) {
+      let lastUserIdx = -1;
+      for (let i = history.length - 1; i >= 0; i--) { if (history[i].role === 'user') { lastUserIdx = i; break; } }
+      if (lastUserIdx !== -1) history = history.slice(0, lastUserIdx);
+    } else {
+      if (history.length > 1 && history[history.length - 1].role === 'assistant') history.pop();
+      if (history.length > 1 && history[history.length - 1].role === 'user') history.pop();
+    }
+    history.push({ role: 'user', content: text });
+    processMessage(text);
+  }
+
+  function addUserMessage(msg, attachNames) {
+    const g = document.createElement('div'); g.className = 'msg-group user';
+    let attachHtml = '';
+    if (attachNames && attachNames.length) {
+      const tags = attachNames.map(a => `<span class="user-attach-tag"><span class="ms">${a.type==='image'?'image':'description'}</span><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;">${escapeHtml(a.name)}</span></span>`).join('');
+      attachHtml = `<div class="user-attach-row">${tags}</div>`;
+    }
+    g.innerHTML = `${attachHtml}<div class="user-bubble">${escapeHtml(msg)}</div>`;
+    chatEl.appendChild(g); attachUserBubbleHandlers(g); scrollToBottom();
+    if (!hasStartedChat) { hasStartedChat = true; welcomeScreen.classList.add('hidden'); }
+    return g;
+  }
+
+  // ── toast ──
+  let toastTimer = null;
+  function showToast(msg) {
+    toast.textContent = msg; toast.classList.add('show');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+
+  // ── escape ──
+  function escapeHtml(str) {
+    if (typeof str !== 'string') str = String(str||'');
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+  }
+
+  // ── chat history persistence ──
+  let history = [];
+  const CHAT_LIST_KEY = 'html_ai_chats';
+
+  function getChatList() { try { return JSON.parse(localStorage.getItem(CHAT_LIST_KEY)||'[]'); } catch(e){ return []; } }
+  function saveChatList(list) { localStorage.setItem(CHAT_LIST_KEY, JSON.stringify(list)); }
+  function genChatId() { return 'chat_' + Date.now() + '_' + Math.random().toString(36).slice(2,7); }
+
+  function saveCurrentChat() {
+    if (!currentChatId) return;
+    const msgs = Array.from(chatEl.querySelectorAll('.msg-group'));
+    const snapshot = msgs.map(g => ({
+      role: g.classList.contains('user') ? 'user' : 'ai',
+      html: g.innerHTML,
+      isStatus: g.classList.contains('status-done')
+    }));
+    localStorage.setItem('html_ai_chat_' + currentChatId, JSON.stringify(snapshot));
+    const list = getChatList(); const existing = list.find(c => c.id === currentChatId);
+    const firstUser = history.find(m => m.role === 'user');
+    const title = firstUser ? firstUser.content.slice(0, 50) : 'New Chat';
+    if (existing) { existing.title = title; existing.ts = Date.now(); } else { list.unshift({ id: currentChatId, title, ts: Date.now() }); }
+    saveChatList(list); renderSidebarHistory();
+  }
+
+  function loadChat(id) {
+    currentChatId = id; hasStartedChat = false;
+    chatEl.innerHTML = ''; history = [getSystemPrompt()];
+    welcomeScreen.classList.remove('hidden');
+    const raw = localStorage.getItem('html_ai_chat_' + id);
+    if (!raw) return;
+    try {
+      const snap = JSON.parse(raw);
+      snap.forEach(item => {
+        const g = document.createElement('div');
+        g.className = 'msg-group ' + item.role + (item.isStatus ? ' status-done' : '');
+        g.innerHTML = item.html; chatEl.appendChild(g);
+        if (item.role === 'user') hasStartedChat = true;
+      });
+      if (hasStartedChat) welcomeScreen.classList.add('hidden');
+      reattachUserBubbleHandlers(); reattachAiActionButtons(); scrollToBottom();
+      const list = getChatList(); const chat = list.find(c => c.id === id);
+      if (chat) {
+        const msgs = Array.from(chatEl.querySelectorAll('.msg-group.user'));
+        msgs.forEach(g => {
+          const b = g.querySelector('.user-bubble');
+          if (b) history.push({ role: 'user', content: b.textContent });
+        });
+        const aiMsgs = Array.from(chatEl.querySelectorAll('.msg-group.ai'));
+        aiMsgs.forEach(g => {
+          const t = g.querySelector('.ai-text');
+          if (t) history.push({ role: 'assistant', content: t.innerText });
+        });
+      }
+    } catch(e) { console.error(e); }
+  }
+
+  function startNewChat() {
+    currentChatId = genChatId(); hasStartedChat = false;
+    chatEl.innerHTML = ''; history = [getSystemPrompt()];
+    welcomeScreen.classList.remove('hidden'); welcomeScreen.style.opacity = '';
+    writeInput.value = ''; writeInput.style.height = 'auto';
+    renderSidebarHistory();
+  }
+
+  function renderSidebarHistory(filter = '') {
+    const list = getChatList(); sidebarHistory.innerHTML = '';
+    const filtered = filter ? list.filter(c => c.title.toLowerCase().includes(filter.toLowerCase())) : list;
+    if (!filtered.length) { sidebarHistory.innerHTML = '<div class="history-empty">No conversations yet</div>'; return; }
+    filtered.forEach(chat => {
+      const item = document.createElement('div');
+      item.className = 'history-item' + (chat.id === currentChatId ? ' active' : '');
+      item.innerHTML = `<span class="ms">chat_bubble_outline</span><span class="history-item-text">${escapeHtml(chat.title)}</span>`;
+      item.addEventListener('click', () => {
+        loadChat(chat.id); sidebar.classList.remove('open'); sidebarOverlay.classList.remove('show');
+        renderSidebarHistory();
+      });
+      sidebarHistory.appendChild(item);
+    });
+  }
+
+  // ── api detail sheet ──
+  function showApiDetail(searchedApis, usedApis, errorApis) {
+    const body = document.getElementById('api-detail-body');
+    const titleEl = document.getElementById('api-sheet-title');
+    const total = (usedApis?usedApis.length:0)+(searchedApis?searchedApis.length:0)+(errorApis?errorApis.length:0);
+    titleEl.textContent = 'APIs' + (total > 0 ? ' (' + total + ')' : '');
+    body.innerHTML = '';
+    if (!total) { body.innerHTML = '<div style="padding:16px;color:var(--text-muted);font-size:13px;">No APIs recorded.</div>'; openSheet(apiDetailSheet); return; }
+    function renderSection(list, label, isError) {
+      if (!list || !list.length) return;
+      const t = document.createElement('div'); t.className = 'api-section-title'; t.textContent = label; body.appendChild(t);
+      list.forEach(info => {
+        const c = document.createElement('div'); c.className = 'api-item-card';
+        if (isError) c.style.cssText = 'border-left:3px solid var(--danger);';
+        c.innerHTML = `<div class="api-item-name">${escapeHtml(info.name||'—')}</div>${info.desc?`<div class="api-item-desc">${escapeHtml(info.desc)}</div>`:''}<div class="api-item-url">${escapeHtml(info.url||info.error||'—')}</div>`;
+        body.appendChild(c);
+      });
+    }
+    renderSection(usedApis, 'Used APIs'); renderSection(errorApis, 'Errors', true); renderSection(searchedApis, 'Searched APIs');
+    openSheet(apiDetailSheet);
+  }
+
+  function extractApisFromText(text) {
+    const apis = []; let m;
+    const tr = /\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*(https?:\/\/[^\s|]+)/g;
+    while ((m = tr.exec(text)) !== null) { const n=m[1].trim(),d=m[2].trim(),u=m[3].trim().replace(/[|\s]+$/,''); if (!/name|endpoint|purpose/i.test(n)) apis.push({name:n,desc:d,url:u}); }
+    const pr = /\b([A-Za-z][A-Za-z0-9 \-]{2,40}?)\s*[:\—–-]\s*(https?:\/\/[^\s,\)]+)/g;
+    while ((m = pr.exec(text)) !== null) { const n=m[1].trim(),u=m[2].trim(); if (!apis.find(a=>a.url===u)) apis.push({name:n,desc:'',url:u}); }
+    return apis;
+  }
+
+  // ── settings actions ──
+  document.getElementById('save-settings-btn').addEventListener('click', () => {
+    API_KEY=settingApiKey.value.trim()||DEFAULT_API_KEY; TEMPERATURE=parseFloat(settingTemperature.value);
+    MAX_TOKENS=parseInt(settingMaxTokens.value); MSG_SIZE=parseInt(settingMsgSize.value);
+    localStorage.setItem('html_ai_key',API_KEY); localStorage.setItem('html_ai_temp',TEMPERATURE);
+    localStorage.setItem('html_ai_max_tokens',MAX_TOKENS); localStorage.setItem('html_ai_msg_size',MSG_SIZE);
+    localStorage.setItem('html_ai_stt_lang',STT_LANG);
+    applyMsgSize(MSG_SIZE); history[0]=getSystemPrompt(); showToast('Settings Saved'); closeSettings();
+  });
+  document.getElementById('reset-settings-btn').addEventListener('click', () => {
+    if (!confirm('Reset all settings to defaults?')) return;
+    API_KEY=DEFAULT_API_KEY; MODEL=DEFAULT_MODEL_ID; TEMPERATURE=DEFAULT_TEMPERATURE; MAX_TOKENS=DEFAULT_MAX_TOKENS; MSG_SIZE=DEFAULT_MSG_SIZE; STT_LANG=DEFAULT_STT_LANG;
+    ['html_ai_key','html_ai_model','html_ai_temp','html_ai_max_tokens','html_ai_msg_size','html_ai_stt_lang'].forEach((k,i) => localStorage.setItem(k,[API_KEY,MODEL,TEMPERATURE,MAX_TOKENS,MSG_SIZE,STT_LANG][i]));
+    applySettingsToUI(); applyMsgSize(MSG_SIZE); document.getElementById('model-pill-label').textContent=getModelLabel(MODEL); history[0]=getSystemPrompt(); showToast('Configuration reset'); closeSettings();
+  });
+  document.getElementById('delete-chats-btn').addEventListener('click', () => {
+    if (!confirm('Delete all chats?')) return;
+    localStorage.removeItem(CHAT_LIST_KEY); Object.keys(localStorage).forEach(k => { if (k.startsWith('html_ai_chat_')) localStorage.removeItem(k); });
+    renderSidebarHistory(); startNewChat(); showToast('All chats deleted'); closeSettings();
+  });
+  document.getElementById('delete-all-data-btn').addEventListener('click', () => {
+    if (!confirm('Delete ALL data? This cannot be undone.')) return;
+    localStorage.clear(); renderSidebarHistory(); startNewChat(); showToast('All data deleted'); closeSettings();
+    API_KEY=DEFAULT_API_KEY; MODEL=DEFAULT_MODEL_ID; TEMPERATURE=DEFAULT_TEMPERATURE; MAX_TOKENS=DEFAULT_MAX_TOKENS; MSG_SIZE=DEFAULT_MSG_SIZE;
+    applySettingsToUI(); applyMsgSize(MSG_SIZE); document.getElementById('model-pill-label').textContent=getModelLabel(MODEL);
+  });
+  document.getElementById('download-source-btn').addEventListener('click', () => {
+    const blob=new Blob([document.documentElement.outerHTML],{type:'text/html'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='html_ai.html'; a.click(); showToast('Downloading...');
+  });
+  document.getElementById('connect-dev-btn').addEventListener('click', () => { window.open('https://wa.me/8801748123244?text=Hi+HTML+AI+Developer', '_blank'); });
+
+  // ── core ──
+  const BASE_API_URL = "https://apis.prexzyvilla.site";
+  const PROXY = "https://corsproxy.io/?url=";
+  const LIST_URL = PROXY + encodeURIComponent("http://apis.prexzyvilla.site/endpoints");
+  let apiData = [];
+
+  function getSystemPrompt() {
+    return { role:"system", content:`You are HaiLite, a smart assistant created by HaiLite.
+
+MEDIA LINK RULES — STRICTLY FOLLOW THESE:
+- IMAGE URLs → <image>url</image> (inline) or <image_link>url</image_link> (card)
+- AUDIO URLs → ALWAYS <audio_link>url</audio_link>
+- VIDEO URLs → ALWAYS <video_link>url</video_link>
+- FILE/DOC URLs → ALWAYS <file_link>url</file_link>
+- Generic web links → <Title_link>url</Title_link> or markdown [text](url)
+- NEVER use bare plain-text or plain markdown for media URLs.
+
+TOOL USE — Use ONLY when needed:
+[SEARCH: keyword] — search internal API catalogue
+[FETCH: url] — fetch a live API endpoint
+[LOADING: message] — optional status update to user
+[THINKING: step description] — optional thinking step description
+
+IMPORTANT: Include [LOADING:…] and [THINKING:…] tags only when performing tool actions, not in final answers.
+After receiving search/fetch results, give the FINAL answer directly. Do not loop unnecessarily.`};
+  }
+
+  // ── suggestion chips ──
+  const SUGGESTIONS = ['Write code','Explain a concept','Translate text','Summarize article','Generate ideas','Debug my code'];
+  SUGGESTIONS.forEach(s => {
+    const btn = document.createElement('button'); btn.className = 'chip-btn'; btn.textContent = s;
+    btn.addEventListener('click', () => { writeInput.value = s; writeInput.dispatchEvent(new Event('input')); writeInput.focus(); });
+    suggestionChipsEl.appendChild(btn);
+  });
+
+  // ── init ──
+  startNewChat();
+  fetch(LIST_URL).then(r => r.json()).then(data => { apiData = Array.isArray(data) ? data : (data.categories || data.endpoints || []); }).catch(() => {});
+
+  // ── status messages ──
+  function addStatusMessage(title) {
+    const d = document.createElement('div'); d.className = 'msg-group ai';
+    d.innerHTML = `<div class="status-msg"><div class="status-header"><div class="status-icon-wrap"><span class="status-hex">&#xe863;</span><img class="status-logo-img" src="logo.png" alt="" onerror="this.style.display='none'"></div><span class="status-title loading-shine">${escapeHtml(title)}</span></div><div class="status-steps"></div></div>`;
+    chatEl.appendChild(d); scrollToBottom(); return d.querySelector('.status-msg');
+  }
+  function addAIMessage() {
+    const d = document.createElement('div'); d.className = 'msg-group ai';
+    d.innerHTML = `<div class="ai-content"><div class="ai-text"></div><div class="msg-actions"></div></div>`;
+    chatEl.appendChild(d); return d;
+  }
+  function addErrorBlock(msg) { const d = document.createElement('div'); d.className = 'msg-group ai'; d.innerHTML = `<div class="error-block"><span class="ms">error_outline</span><span>${escapeHtml(msg)}</span></div>`; chatEl.appendChild(d); return d; }
+  function updateStatusTitle(sd, txt) { const t = sd.querySelector('.status-title'); if (t) { t.innerText = txt; t.classList.add('loading-shine'); } }
+  function markStatusComplete(sd, steps) { sd.classList.add('status-complete'); sd.parentElement.classList.add('status-done'); const t = sd.querySelector('.status-title'); t.classList.remove('loading-shine'); if (t) t.innerText = steps > 0 ? `Done in ${steps} step${steps!==1?'s':''}.` : 'Done.'; }
+  function addStep(sd, txt, state = 'pending') { const sc = sd.querySelector('.status-steps'); const s = document.createElement('div'); const icons = {done:'check_circle',error:'cancel',pending:'radio_button_unchecked'}; s.className = 'step-item' + (state!=='pending'?' '+state:''); s.innerHTML = `<span class="ms">${icons[state]||'radio_button_unchecked'}</span><span>${escapeHtml(txt)}</span>`; sc.appendChild(s); return s; }
+  function markLastStepDone(sd) { const ss = sd.querySelectorAll('.step-item'); if (ss.length) { const l = ss[ss.length-1]; l.classList.add('done'); l.querySelector('.ms').innerText = 'check_circle'; } }
+  function markLastStepError(sd) { const ss = sd.querySelectorAll('.step-item'); if (ss.length) { const l = ss[ss.length-1]; l.classList.add('error'); l.querySelector('.ms').innerText = 'cancel'; } }
+
+  // ── rich link cards ──
+  function getFaviconUrl(url) { try { const u = new URL(url); return `https://www.google.com/s2/favicons?sz=64&domain=${u.hostname}`; } catch(e) { return null; } }
+  function getLinkType(url) { const u=url.toLowerCase().split('?')[0]; if(/\.(mp3|wav|ogg|aac|flac|m4a)/.test(u))return'audio'; if(/\.(mp4|webm|ogv|mov|avi|mkv)/.test(u))return'video'; if(/\.(jpg|jpeg|png|gif|webp|svg|bmp|avif)/.test(u))return'image'; if(/\.(pdf|doc|docx|xls|xlsx|ppt|pptx|txt|zip|rar|tar|gz)/.test(u))return'file'; return'link'; }
+  function getTypeIcon(t) { return{audio:'music_note',video:'smart_display',image:'image',file:'insert_drive_file',link:'language'}[t]||'language'; }
+
+  function buildRichLinkCard(title, url, forcedType) {
+    const type = forcedType || getLinkType(url);
+    const fav = getFaviconUrl(url);
+    const favHtml = fav ? `<img class="rich-link-favicon" src="${fav}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : '';
+    const phHtml = `<div class="rich-link-favicon-ph" style="${fav?'display:none':''}"><span class="ms">${getTypeIcon(type)}</span></div>`;
+    const infoHtml = `<div class="rich-link-info"><div class="rich-link-title">${escapeHtml(title)}</div><div class="rich-link-url">${escapeHtml(url)}</div></div>`;
+    const actHtml = `<div class="rich-link-actions"><button class="rich-link-btn rl-copy" title="Copy"><span class="ms">content_copy</span></button><button class="rich-link-btn rl-open" title="Open"><span class="ms">open_in_new</span></button></div>`;
+    const w = document.createElement('div');
+    if (type === 'image') {
+      w.className = 'rich-link-card image-card';
+      w.innerHTML = `<div class="rlc-top">${favHtml}${phHtml}${infoHtml}${actHtml}</div><div class="rlc-image-wrap"><img src="${url}" alt="${escapeHtml(title)}" loading="lazy" onerror="this.closest('.rlc-image-wrap').style.display='none'"><a class="rlc-img-save" href="${url}" download target="_blank" title="Save image"><span class="ms">download</span></a></div>`;
+    } else {
+      w.className = 'rich-link-card';
+      w.innerHTML = `${favHtml}${phHtml}${infoHtml}${actHtml}`;
+    }
+    w.querySelector('.rl-copy').addEventListener('click', () => safeCopy(url));
+    w.querySelector('.rl-open').addEventListener('click', () => window.open(url, '_blank'));
+    return w;
+  }
+
+  // ── render ai content ──
+  function renderAiContent(text, container) {
+    if (typeof text !== 'string') text = String(text || '');
+    text = text.replace(/<chat_title>[\s\S]*?<\/chat_title>\n?/, '');
+    const linkEntries = [];
+    [{re:/<image_link>(.*?)<\/image_link>/g,type:'image',label:'Image'},{re:/<audio_link>(.*?)<\/audio_link>/g,type:'audio',label:'Audio'},{re:/<video_link>(.*?)<\/video_link>/g,type:'video',label:'Video'},{re:/<file_link>(.*?)<\/file_link>/g,type:'file',label:'File'}].forEach(({re,type,label}) => {
+      text = text.replace(re, (_,url) => { const i=linkEntries.length; linkEntries.push({title:label,url:url.trim(),type}); return `<span data-rlc="${i}"></span>`; });
+    });
+    text = text.replace(/<([a-zA-Z0-9_\s]+)_link>(.*?)<\/\1_link>/g, (_,rawTitle,url) => {
+      const title=rawTitle.replace(/_/g,' ').trim(); const i=linkEntries.length; linkEntries.push({title,url:url.trim(),type:null}); return `<span data-rlc="${i}"></span>`;
+    });
+    text = text.replace(/<image>(.*?)<\/image>/g, (_,url) => `![](${url.trim()})`);
+    container.innerHTML = marked.parse(text);
+    container.querySelectorAll('[data-rlc]').forEach(ph => { const ld=linkEntries[parseInt(ph.getAttribute('data-rlc'))]; if(ld) ph.replaceWith(buildRichLinkCard(ld.title,ld.url,ld.type)); });
+    container.querySelectorAll('pre').forEach(pre => {
+      if (pre.closest('.code-block-wrapper')) return;
+      const code = pre.querySelector('code');
+      const wrapper = document.createElement('div'); wrapper.className = 'code-block-wrapper';
+      let lang = 'code'; if (code && code.className) { const m=code.className.match(/language-(\w+)/); if(m) lang=m[1]; }
+      const hdr = document.createElement('div'); hdr.className = 'code-block-header';
+      hdr.innerHTML = `<span class="code-block-lang">${lang}</span><div class="code-block-header-actions"><button class="code-block-toggle" title="Show/Hide"><span class="ms">visibility</span> Hide</button><button class="code-block-copy"><span class="ms">content_copy</span> Copy</button></div>`;
+      pre.parentNode.insertBefore(wrapper, pre); wrapper.appendChild(hdr); wrapper.appendChild(pre);
+      hdr.querySelector('.code-block-copy').addEventListener('click', () => safeCopy(code ? code.innerText : pre.innerText));
+      hdr.querySelector('.code-block-toggle').addEventListener('click', function() {
+        const collapsed = wrapper.classList.toggle('collapsed');
+        const ms = this.querySelector('.ms');
+        ms.innerText = collapsed ? 'visibility_off' : 'visibility';
+        this.childNodes[1].textContent = collapsed ? ' Show' : ' Hide';
+      });
+    });
+  }
+
+  function typeText(container, fullText, statusDiv, stepText) {
+    return new Promise(resolve => {
+      let idx = 0; const stepEl = addStep(statusDiv, stepText);
+      function tick() {
+        if (!isGenerating) { renderAiContent(fullText, container); resolve(); return; }
+        if (idx < fullText.length) { idx = Math.min(idx+3, fullText.length); renderAiContent(fullText.substring(0,idx), container); setTimeout(tick, 6); }
+        else { stepEl.classList.add('done'); stepEl.querySelector('.ms').innerText = 'check_circle'; resolve(); }
+      }
+      tick();
+    });
+  }
+
+  // ── action buttons ──
+  function addActionButtons(group, userText, hasApis, searchedSnap, usedSnap, errorSnap) {
+    const actDiv = group.querySelector('.msg-actions');
+    const aiText = group.querySelector('.ai-text');
+    if (!actDiv) return;
+    const total = (usedSnap?usedSnap.length:0)+(searchedSnap?searchedSnap.length:0)+(errorSnap?errorSnap.length:0);
+    const copyBtn = document.createElement('button'); copyBtn.className = 'act-btn copy-btn'; copyBtn.title = 'Copy'; copyBtn.innerHTML = '<span class="ms">content_copy</span>';
+    const retryBtn = document.createElement('button'); retryBtn.className = 'act-btn retry-btn'; retryBtn.title = 'Retry'; retryBtn.innerHTML = '<span class="ms">refresh</span>';
+    actDiv.innerHTML = ''; actDiv.appendChild(copyBtn); actDiv.appendChild(retryBtn);
+    if (hasApis) {
+      const apiBtn = document.createElement('button'); apiBtn.className = 'act-btn used-api-btn used-api-badge';
+      apiBtn.innerHTML = `<span class="ms">api</span><span class="act-btn-lbl">APIs${total>0?' ('+total+')':''}</span>`;
+      const sS=[...searchedSnap||[]], uS=[...usedSnap||[]], eS=[...errorSnap||[]];
+      try { apiBtn.dataset.searched=JSON.stringify(sS); apiBtn.dataset.used=JSON.stringify(uS); apiBtn.dataset.errors=JSON.stringify(eS); } catch(e) {}
+      apiBtn.addEventListener('click', () => showApiDetail(sS, uS, eS));
+      actDiv.appendChild(apiBtn);
+    }
+    const capturedText = aiText;
+    copyBtn.addEventListener('click', () => safeCopy(capturedText ? capturedText.innerText : ''));
+    const capturedGroup = group;
+    retryBtn.addEventListener('click', () => {
+      if (isGenerating) return;
+      const all = Array.from(chatEl.querySelectorAll('.msg-group')); const idx = all.indexOf(capturedGroup);
+      if (idx > 0 && all[idx-1].classList.contains('status-done')) all[idx-1].remove();
+      capturedGroup.remove();
+      if (history.length > 1 && history[history.length-1].role === 'assistant') history.pop();
+      const lastUser = [...history].reverse().find(m => m.role === 'user');
+      if (lastUser) processMessage(lastUser.content);
+    });
+    actDiv.style.opacity = '1';
+    document.querySelectorAll('.ai-disclaimer').forEach(d => d.remove());
+    const disc = document.createElement('div'); disc.className = 'ai-disclaimer'; disc.textContent = 'HaiLite can make mistakes.';
+    group.querySelector('.ai-content').appendChild(disc);
+  }
+
+  function reattachAiActionButtons() {
+    document.querySelectorAll('.msg-group.ai').forEach(group => {
+      const actDiv = group.querySelector('.msg-actions'); if (!actDiv) return;
+      const copyBtn = actDiv.querySelector('.copy-btn'), retryBtn = actDiv.querySelector('.retry-btn'), apiBtn = actDiv.querySelector('.used-api-btn');
+      const aiText = group.querySelector('.ai-text');
+      if (copyBtn) { const nc = copyBtn.cloneNode(true); copyBtn.replaceWith(nc); const ct = aiText; nc.addEventListener('click', () => safeCopy(ct ? ct.innerText : '')); }
+      if (retryBtn) { const nr = retryBtn.cloneNode(true); retryBtn.replaceWith(nr); const cg = group; nr.addEventListener('click', () => { if(isGenerating)return; const all=Array.from(chatEl.querySelectorAll('.msg-group')); const idx=all.indexOf(cg); if(idx>0&&all[idx-1].classList.contains('status-done'))all[idx-1].remove(); cg.remove(); if(history.length>1&&history[history.length-1].role==='assistant')history.pop(); const lu=[...history].reverse().find(m=>m.role==='user'); if(lu)processMessage(lu.content); }); }
+      if (apiBtn) {
+        const na = apiBtn.cloneNode(true); apiBtn.replaceWith(na);
+        let sS=[], uS=[], eS=[];
+        try { sS=JSON.parse(na.dataset.searched||'[]'); uS=JSON.parse(na.dataset.used||'[]'); eS=JSON.parse(na.dataset.errors||'[]'); } catch(e) {}
+        na.addEventListener('click', () => showApiDetail(sS, uS, eS));
+      }
+    });
+  }
+
+  // ── copy ──
+  function safeCopy(text) { if (navigator&&navigator.clipboard&&navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(()=>showToast('Copied!')).catch(()=>fallbackCopy(text)); } else { fallbackCopy(text); } }
+  function fallbackCopy(text) { try { const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('Copied!'); } catch(e) { showToast('Copy failed'); } }
+
+  async function fetchWithProxy(url) { const p=url.startsWith(PROXY)?url:PROXY+encodeURIComponent(url); const r=await fetch(p); if(!r.ok) throw new Error(`HTTP ${r.status}`); return await r.json(); }
+
+  async function getAIResponse(messages, signal) {
+    const keys = [API_KEY, ...FALLBACK_KEYS.filter(k => k !== API_KEY)];
+    let lastErr = 'Unknown error';
+    for (const key of keys) {
+      if (signal && signal.aborted) return { error:true, aborted:true };
+      try {
+        const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method:'POST',
+          headers:{'Authorization':`Bearer ${key}`,'Content-Type':'application/json'},
+          body:JSON.stringify({model:MODEL, messages, stream:true, temperature:TEMPERATURE, max_tokens:MAX_TOKENS}),
+          signal
+        });
+        if (!res.ok) {
+          const et = await res.text().catch(()=>'');
+          lastErr = `HTTP ${res.status}: ${et.slice(0,120)}`;
+          if ([429,503,502,529].includes(res.status)) { await new Promise(r=>setTimeout(r,800)); continue; }
+          if (res.status === 401) break;
+          throw new Error(lastErr);
+        }
+        const reader = res.body.getReader(); const dec = new TextDecoder(); let full = '';
+        while (true) {
+          const {done,value} = await reader.read(); if (done) break;
+          for (const line of dec.decode(value).split('\n')) {
+            const t = line.trim();
+            if (t.startsWith('data: ') && t !== 'data: [DONE]') {
+              try { const p=JSON.parse(t.slice(6)); const c=p.choices?.[0]?.delta?.content; if(c) full+=c; } catch(e) {}
+            }
+          }
+        }
+        if (full.trim()) return full; lastErr = 'Empty response'; continue;
+      } catch(e) { if(e.name==='AbortError') return{error:true,aborted:true}; lastErr=e.message; continue; }
+    }
+    return { error:true, message:lastErr };
+  }
+
+  function setGeneratingState(v) { isGenerating=v; sendBtn.classList.toggle('stop-mode',v); sendBtn.querySelector('.ms').innerText=v?'stop':'arrow_upward'; }
+  function resetTextarea() { writeInput.style.height='auto'; writeInput.value=''; }
+  function scrollToBottom() { chatEl.scrollTop=chatEl.scrollHeight; }
+
+  function parseAIResponse(text) {
+    const sm=text.match(/\[SEARCH:\s*(.+?)\]/i), fm=text.match(/\[FETCH:\s*(https?:\/\/[^\]]+)\]/i);
+    const lm=text.match(/\[LOADING:\s*(.+?)\]/i), tm=text.match(/\[THINKING:\s*(.+?)\]/i);
+    const loadingMsg=lm?lm[1].trim():'', thinkingMsg=tm?tm[1].trim():'';
+    if (sm) return { type:'search', value:sm[1].trim(), loadingMsg, thinkingMsg };
+    if (fm) return { type:'fetch', value:fm[1].trim(), loadingMsg, thinkingMsg };
+    const cleanText=text.replace(/\[(SEARCH|FETCH|LOADING|THINKING|TITLE):[^\]]*\]\n?/gi,'').trim();
+    return { type:'answer', value:cleanText, loadingMsg, thinkingMsg };
+  }
+
+  function applyFilterToMessage(text) {
+    if (!activeFilterMode) return text;
+    const prefixes = { download:'Search for and provide direct download links for: ', image:'Use the image generation API to create an image of: ', sound:'Search for and provide audio links for sound or music matching: ', apis:'Search and list all available APIs related to: ' };
+    return (prefixes[activeFilterMode] || '') + text;
+  }
+
+  async function processMessage(text) {
+    const statusDiv = addStatusMessage('Thinking…');
+    const aiGroup = addAIMessage();
+    setGeneratingState(true); abortController = new AbortController(); const signal = abortController.signal;
+    let steps = 0; lastSearchedApis = []; lastUsedApis = []; lastErrorApis = [];
+    if (history[0] && history[0].role === 'system') history[0] = getSystemPrompt();
+    try {
+      for (let round = 0; round < 50; round++) {
+        if (!isGenerating) break;
+        const resp = await getAIResponse(history, signal);
+        if (typeof resp !== 'string') { if(resp.aborted){addStep(statusDiv,'Stopped.','error');break;} addStep(statusDiv,'Error: '+(resp.message||'API failed'),'error'); addErrorBlock(resp.message||'API failed.'); break; }
+        const parsed = parseAIResponse(resp);
+        if (parsed.loadingMsg) updateStatusTitle(statusDiv, parsed.loadingMsg);
+        if (parsed.type === 'search') {
+          const stepLabel = parsed.thinkingMsg || parsed.value;
+          addStep(statusDiv, stepLabel); steps++;
+          const kw = parsed.value.toLowerCase().split(' ').filter(Boolean);
+          let found = [];
+          apiData.forEach(cat => (cat.items||[]).forEach(item => { const name=Object.keys(item)[0]; const det=item[name]; if(kw.some(w=>(name+' '+(det.desc||'')).toLowerCase().includes(w))) found.push({name,...det}); }));
+          const results = found.length ? found.slice(0,10).map(r=>`- ${r.name}: ${r.desc} | URL: ${BASE_API_URL}${r.path}={prompt}`).join('\n') : 'No matching APIs found.';
+          found.slice(0,10).forEach(f => { if(!lastSearchedApis.find(x=>x.url===BASE_API_URL+f.path)) lastSearchedApis.push({name:f.name,desc:f.desc||'',path:f.path||'',url:BASE_API_URL+(f.path||'')}); });
+          markLastStepDone(statusDiv);
+          history.push({role:'assistant',content:resp});
+          history.push({role:'user',content:`System: Search results:\n${results}\n\nContinue.`});
+          continue;
+        }
+        if (parsed.type === 'fetch') {
+          const stepLabel = parsed.thinkingMsg || parsed.value;
+          addStep(statusDiv, stepLabel); steps++;
+          const ae = {name:'External API',desc:'Fetched endpoint',path:'',url:parsed.value};
+          const known = lastSearchedApis.find(a => parsed.value.startsWith(a.url.split('=')[0]));
+          if (known) { ae.name=known.name; ae.desc=known.desc; ae.path=known.path; }
+          let fetchResult = '';
+          try { const data=await fetchWithProxy(parsed.value); fetchResult=JSON.stringify(data,null,2); if(!lastUsedApis.find(x=>x.url===ae.url))lastUsedApis.push(ae); markLastStepDone(statusDiv); }
+          catch(e) { fetchResult='Fetch failed: '+e.message; if(!lastErrorApis.find(x=>x.url===ae.url))lastErrorApis.push({...ae,error:e.message}); markLastStepError(statusDiv); }
+          history.push({role:'assistant',content:resp});
+          history.push({role:'user',content:`System: Fetch result:\n\`\`\`json\n${fetchResult}\n\`\`\`\n\nNow give the final answer.`});
+          continue;
+        }
+        // ANSWER
+        const scanned = extractApisFromText(parsed.value);
+        scanned.forEach(a => { if(!lastSearchedApis.find(x=>x.url===a.url)&&!lastUsedApis.find(x=>x.url===a.url)) lastSearchedApis.push(a); });
+        const hasApis = lastSearchedApis.length>0||lastUsedApis.length>0||lastErrorApis.length>0;
+        const sSnap=[...lastSearchedApis], uSnap=[...lastUsedApis], eSnap=[...lastErrorApis];
+        await typeText(aiGroup.querySelector('.ai-text'), parsed.value, statusDiv, 'Rendering response');
+        history.push({role:'assistant',content:resp});
+        setGeneratingState(false); abortController = null;
+        addActionButtons(aiGroup, text, hasApis, sSnap, uSnap, eSnap);
+        markStatusComplete(statusDiv, steps); saveCurrentChat(); return;
+      }
+    } catch(err) { addErrorBlock('Error: ' + err.message); }
+    setGeneratingState(false); abortController = null;
+    addActionButtons(aiGroup, text, lastSearchedApis.length>0||lastUsedApis.length>0||lastErrorApis.length>0, [...lastSearchedApis],[...lastUsedApis],[...lastErrorApis]);
+    markStatusComplete(statusDiv, steps); saveCurrentChat();
+  }
+
+  async function handleSend() {
+    if (isGenerating && abortController) { abortController.abort(); setGeneratingState(false); return; }
+    const text = writeInput.value.trim(); if (!text) return;
+    const filteredText = applyFilterToMessage(text);
+    resetTextarea(); addUserMessage(text);
+    history.push({role:'user', content: filteredText});
+    processMessage(filteredText);
+  }
+
+  // ── scroll down button ──
+  const scrollDownBtn = document.getElementById('scroll-down-btn');
+  chatEl.addEventListener('scroll', () => { const d=chatEl.scrollHeight-chatEl.scrollTop-chatEl.clientHeight; scrollDownBtn.classList.toggle('show',d>150); });
+  scrollDownBtn.addEventListener('click', () => chatEl.scrollTo({top:chatEl.scrollHeight,behavior:'smooth'}));
+
+  function updateWriteH() { const wa=document.getElementById('write-area'); if(wa) document.documentElement.style.setProperty('--write-area-h',wa.offsetHeight+'px'); }
+  updateWriteH(); new ResizeObserver(updateWriteH).observe(document.getElementById('write-area'));
+
+  sendBtn.addEventListener('click', () => sendDispatch());
+  writeInput.addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(!isGenerating)sendDispatch();} });
+  writeInput.addEventListener('input', function () { this.style.height='auto'; this.style.height=this.scrollHeight+'px'; });
+  function sendDispatch() { if (typeof handleSendWithAttach === 'function') handleSendWithAttach(); else handleSend(); }
+
+  // ── STT ──
+  const voiceBtn = document.getElementById('voice-btn');
+  if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+    voiceBtn.style.display = 'none';
+  } else {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let rec = null, isRecording = false, interimEl = null;
+    function getSttBcp() { const f=STT_LANGUAGES.find(l=>l.code===STT_LANG); return (f&&f.bcp)?f.bcp:''; }
+    function createRec() {
+      const r = new SR(); r.continuous=true; r.interimResults=true; r.maxAlternatives=1;
+      const bcp=getSttBcp(); if(bcp) r.lang=bcp;
+      r.onstart=()=>{ isRecording=true; voiceBtn.querySelector('.ms').innerText='mic'; voiceBtn.style.color='var(--danger)'; if(!interimEl){interimEl=document.createElement('div');interimEl.className='stt-interim';document.querySelector('.write-bar-inner').appendChild(interimEl);} interimEl.textContent='Listening…'; showToast('Listening… tap mic to stop'); };
+      r.onresult=e=>{ let interim='',final=''; for(let i=e.resultIndex;i<e.results.length;i++){const t=e.results[i][0].transcript;if(e.results[i].isFinal)final+=t;else interim+=t;} if(final){writeInput.value+=(writeInput.value?' ':'')+final.trim();writeInput.dispatchEvent(new Event('input'));} if(interimEl)interimEl.textContent=interim||(isRecording?'Listening…':''); };
+      r.onerror=err=>{ const msgs={'no-speech':'No speech detected','not-allowed':'Microphone blocked','network':'Network error','audio-capture':'No microphone'}; showToast(msgs[err.error]||'Voice error: '+err.error); stopRecording(); };
+      r.onend=()=>{ if(isRecording){try{r.start();}catch(e){stopRecording();}} };
+      return r;
+    }
+    function startRecording() { rec=createRec(); try{rec.start();}catch(e){showToast('Could not start mic');} }
+    function stopRecording() { isRecording=false; voiceBtn.querySelector('.ms').innerText='mic'; voiceBtn.style.color=''; if(interimEl){interimEl.remove();interimEl=null;} try{if(rec)rec.stop();}catch(e){} rec=null; }
+    voiceBtn.addEventListener('click', () => { if(isRecording)stopRecording(); else startRecording(); });
+  }
+
+  // ── upload / attach ──
+  const addBtn = document.getElementById('add-btn');
+  const attachedFilesEl = document.getElementById('attached-files');
+  const fileInputOcr = document.getElementById('file-input-ocr');
+  const fileInputDoc = document.getElementById('file-input-doc');
+  let attachedContexts = [];
+
+  addBtn.addEventListener('click', () => openSheet(uploadSheet));
+
+  function showAttachedFiles() {
+    if (!attachedContexts.length) { attachedFilesEl.style.display='none'; return; }
+    attachedFilesEl.style.display='flex'; attachedFilesEl.innerHTML='';
+    attachedContexts.forEach((ctx,i) => {
+      const chip = document.createElement('div'); chip.className='attach-chip';
+      chip.innerHTML = `<span class="ms">${ctx.type==='image'?'image':'description'}</span><span class="attach-chip-name">${escapeHtml(ctx.name)}</span><button class="attach-chip-remove"><span class="ms">close</span></button>`;
+      (function(idx){ chip.querySelector('.attach-chip-remove').addEventListener('click',()=>{attachedContexts.splice(idx,1);showAttachedFiles();}); })(i);
+      attachedFilesEl.appendChild(chip);
+    });
+  }
+  function showLoadingChip(name) { attachedFilesEl.style.display='flex'; const chip=document.createElement('div'); chip.className='attach-loading'; chip.id='loading-chip'; chip.innerHTML=`<div class="attach-loading-spinner"></div><span class="attach-loading-txt">Reading ${escapeHtml(name)}…</span>`; attachedFilesEl.appendChild(chip); }
+  function removeLoadingChip() { const c=document.getElementById('loading-chip'); if(c)c.remove(); }
+
+  document.getElementById('upload-image-ocr').addEventListener('click',()=>{closeSheet(uploadSheet);fileInputOcr.value='';fileInputOcr.click();});
+  fileInputOcr.addEventListener('change', async()=>{
+    const file=fileInputOcr.files[0]; if(!file)return;
+    showLoadingChip(file.name);
+    try { const base64=await fileToBase64(file); const ocrText=await runOCR(base64); removeLoadingChip(); attachedContexts.push({name:file.name,content:ocrText,type:'image'}); showAttachedFiles(); showToast('Text extracted from image'); }
+    catch(e) { removeLoadingChip(); showToast('OCR failed: '+e.message); }
+  });
+  document.getElementById('upload-text-doc').addEventListener('click',()=>{closeSheet(uploadSheet);fileInputDoc.value='';fileInputDoc.click();});
+  fileInputDoc.addEventListener('change', async()=>{
+    const file=fileInputDoc.files[0]; if(!file)return; showLoadingChip(file.name);
+    try { const text=await readTextFile(file); removeLoadingChip(); attachedContexts.push({name:file.name,content:text,type:'doc'}); showAttachedFiles(); showToast('Document attached'); }
+    catch(e) { removeLoadingChip(); showToast('Could not read file: '+e.message); }
+  });
+
+  function fileToBase64(file) { return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=()=>rej(new Error('Read failed'));r.readAsDataURL(file);}); }
+  function readTextFile(file) { return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(new Error('Read failed'));r.readAsText(file);}); }
+  async function runOCR(base64) {
+    if (!window.Tesseract) { await new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);}); }
+    showToast('Running OCR…');
+    const result=await Tesseract.recognize('data:image/png;base64,'+base64,'eng+ben+hin',{logger:()=>{}});
+    const text=result.data.text.trim(); if(!text)throw new Error('No text found in image'); return text;
+  }
+
+  async function handleSendWithAttach() {
+    if (isGenerating && abortController) { abortController.abort(); setGeneratingState(false); return; }
+    const userText = writeInput.value.trim();
+    if (!userText && !attachedContexts.length) return;
+    const attachSnap = [...attachedContexts];
+    let fullText = userText;
+    if (attachedContexts.length) {
+      const ctxParts = attachedContexts.map(ctx => { const label=ctx.type==='image'?`[OCR from image "${ctx.name}"]`:`[Document "${ctx.name}"]`; return `${label}:\n\`\`\`\n${ctx.content.slice(0,8000)}\n\`\`\``; });
+      fullText = userText ? `${userText}\n\n${ctxParts.join('\n\n')}` : `Please analyze the following:\n\n${ctxParts.join('\n\n')}`;
+    }
+    const filteredText = applyFilterToMessage(fullText);
+    attachedContexts = []; showAttachedFiles(); resetTextarea();
+    addUserMessage(userText || 'Analyze attached file', attachSnap);
+    history.push({role:'user', content: filteredText});
+    processMessage(filteredText);
+  }
+
+  renderSidebarHistory();
+});
+</script>
+</body>
+</html>
